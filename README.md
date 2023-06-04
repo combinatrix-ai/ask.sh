@@ -151,7 +151,7 @@ If you want `fill` command to work more nicely:
 ## Installation
 
 - Install using cargo: `cargo install ai-sh`
-- Set `AI_SH_OPENAI_API_KEY` in your shell. Example: `export OPENAI_API_KEY=xxxx`
+- Set `AI_SH_OPENAI_API_KEY` in your shell. Example: `export AI_SH_OPENAI_API_KEY=xxxx`
 - If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `AI_SH_NO_PANE=true`
   - If you don't set this variable, `ask` command will always recommend you to use tmux.
 - Test the command with `ask hey whats up`
