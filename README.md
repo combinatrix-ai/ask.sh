@@ -150,7 +150,7 @@ If you want `fill` command to work more nicely:
 
 ## Installation
 
-- Install using cargo: `cargo install ai_sh`
+- Install using cargo: `cargo install ai-sh`
 - Set `AI_SH_OPENAI_API_KEY` in your shell. Example: `export OPENAI_API_KEY=xxxx`
 - If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `AI_SH_NO_PANE=true`
   - If you don't set this variable, `ask` command will always recommend you to use tmux.
@@ -214,3 +214,8 @@ This project is licensed under the terms of the MIT license.
 - Yes! You can use GPT-4 by setting the environmanet_variable `AI_SH_OPENAI_MODEL=gpt-4`.
   - This environment variable is just passed to OpenAI API. So you can use whatever model OpenAI serves.
 - Currently, default model is set to `gpt-3.5-turbo`.
+
+#### Why Rust?
+
+- It's just because shell tools should have less dependencies!
+- There's no standard way in Python to make a command available to everywhere. 
