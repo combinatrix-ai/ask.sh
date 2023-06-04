@@ -146,7 +146,7 @@ If you also want `fill` command:
 
 If you want `fill` command to work more nicely:
 - `tmux`: If you run ai.sh in tmux, you can send the current terminal to the AI for context-aware input.
-- `zsh`: If you run ai.sh in zhs, you can fill the next command directly. No copy-paste required.
+- `zsh`: If you run ai.sh in zsh (not Bash), you can fill the next command directly. No copy-paste required.
 
 ## Installation
 
@@ -160,7 +160,7 @@ If you want `fill` command to work more nicely:
 
 If you just want `ask` command, you can safely skip here.
 
-#### Zsh (recommended)
+#### zsh (recommended)
 
 - If you use zsh, write this to the end of .zshrc
   - `fill` command which let you directly type the AI suggested commands.
@@ -173,7 +173,7 @@ function fill() {
 
 #### Bash and others
 
-- If you use Bash, you can't directly type the AI suggested commands because bash doesn't allow.
+- If you use Bash, you can't directly type the AI suggested commands because Bash doesn't have necessary APIs.
 - However, the code below insert the selected command to the end of history. Thus you can use the command if you push up key.
 
 ```shell
