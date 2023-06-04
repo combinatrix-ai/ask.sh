@@ -2,10 +2,13 @@
 
 (This section is entirely written by ChatGPT.)
 
-
 Welcome to a revolutionary way of interacting with your terminal - the AI Terminal Assistant. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you an interactive, context-aware dialog right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command line productivity.
 
 AI Terminal Assistant is your coding companion that provides AI insights at your command, simplifying your coding journey. Welcome to the future of coding!
+
+# Demo
+Download iris dataset, do some analysis, all by shell commands without leaving the terminal. (Played in 3x. Using GPT-4)
+![Demo GIF](https://github.com/hmirin/ai.sh/assets/1284876/93f54d0f-3ae8-4178-8e8e-201da7314441)
 
 # Commands
 
