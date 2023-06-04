@@ -1,5 +1,8 @@
 # ai.sh: The Future of Terminal Interfacing 🚀
+
 (This section is entirely written by ChatGPT.)
+
+
 Welcome to a revolutionary way of interacting with your terminal - the AI Terminal Assistant. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you an interactive, context-aware dialog right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command line productivity.
 
 AI Terminal Assistant is your coding companion that provides AI insights at your command, simplifying your coding journey. Welcome to the future of coding!
@@ -69,7 +72,7 @@ By understanding the context of your terminal, `ai.sh` is not just about asking 
 ```
 ❯ git init
 Reinitialized existing Git repository in /Users/yotaro/projects/llm-demo/ai.sh/.git/
-``
+```
 
 Do you know what exactly happen when you `git init` again? Let's ask:
 ```
