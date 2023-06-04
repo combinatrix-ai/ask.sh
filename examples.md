@@ -75,3 +75,42 @@ function mydirs() {
 complete -F mydirs -d ls
 This will define a new function called mydirs which will use the compgen command to generate a list of directory names and set them as the completion candidates for the current command. The complete command at the end will tell bash to use this function for directory completion when the ls command is typed in. Now, when you type ls and tab for completion, you will only see directories as options.
 ````
+
+# AI can make complex awk scripts, fix the error by themselves
+
+````
+❯ head -n5 iris.csv
+sepal_length,sepal_width,petal_length,petal_width,species
+5.1,3.5,1.4,0.2,setosa
+4.9,3,1.4,0.2,setosa
+4.7,3.2,1.3,0.2,setosa
+4.6,3.1,1.5,0.2,setosa
+❯ fill can you group by species and show avg for each class and each column
+To accomplish this, you can use the `awk` command with delimiter set to ',' to group by species and calculate the mean for each column. Here's the command you can use:
+```awk -F ',' 'NR>1{sumLengths[$5]+=($1+$2+$3+$4); count[$5]+=1;}END{for(species in sumLengths){print species, sumLengths[species]/count[species]}}' iris.csv```
+This will output the average values for each species, which will include the mean of sepal_length, sepal_width, petal_length, and petal_width.
+❯ awk -F ',' 'NR>1{sumLengths[$5]+=($1+$2+$3+$4); count[$5]+=1;}END{for(species in sumLengths){print species, sumLengths[species]/count[species]}}' iris.csv
+versicolor 14.292
+setosa 10.132
+virginica 17.14
+❯ fill but this doent show all column avg
+To print the average for each column in addition to the species column, you can modify the `awk` command to include additional arrays for each column's sum and count. Here is the updated command:
+```awk -F ',' 'NR>1{sumLengths[$5]+=$1; sumWidths[$5]+=$2; sumPlength[$5]+=$3; sumPwidth[$5]+=$4; count[$5]+=1;}END{for(specLengths[species]/count[species], sumWidths[species]/count[species], sumPlength[species]/count[species], sumPwidth[species]/count[species]}}' iris.csv```
+This command will output the average values for each species for all four columns, i.e., sepal_length, sepal_width, petal_length, and petal_width.
+❯ awk -F ',' 'NR>1{sumLengths[$5]+=$1; sumWidths[$5]+=$2; sumPlength[$5]+=$3; sumPwidth[$5]+=$4; count[$5]+=1;}END{for(specLengths[species]/count[species], sumWidths[species]/count[species], sumPlength[species]/count[species], sumPwidth[species]/count[species]}}' iris.csv
+awk: syntax error at source line 1
+ context is
+        NR>1{sumLengths[$5]+=$1; sumWidths[$5]+=$2; sumPlength[$5]+=$3; sumPwidth[$5]+=$4; >>>  count[$5]+=1;}END{for(specLengths[species]/count[species], <<<
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+        extra }
+        missing )
+❯ fill fix this
+I apologize for the mistake in my previous response. Here's the correct command that will output the average values for each species for all four columns (i.e., sepal_length, sepal_width, petal_length, and petal_width):
+```awk -F ',' 'NR>1{sumLengths[$5]+=$1; sumWidths[$5]+=$2; sumPlength[$5]+=$3; sumPwidth[$5]+=$4; count[$5]+=1;} END{for(spec in sumLengths){print spec, sumLengths[spec]/count[spec], sumWidths[spec]/count[spec], sumPlength[spec]/count[spec], sumPwidth[spec]/count[spec]}}' iris.csv```
+This command will group the data by species and calculate the mean for each column, then print the results for all four columns. Let me know if you need further assistance!
+❯ awk -F ',' 'NR>1{sumLengths[$5]+=$1; sumWidths[$5]+=$2; sumPlength[$5]+=$3; sumPwidth[$5]+=$4; count[$5]+=1;} END{for(spec in sumLengths){print spec, sumLengths[spec]/count[spec], sumWidths[spec]/count[spec], sumPlength[spec]/count[spec], sumPwidth[spec]/count[spec]}}' iris.csv
+versicolor 5.936 2.77 4.26 1.326
+setosa 5.006 3.418 1.464 0.244
+virginica 6.588 2.974 5.552 2.026
+````
