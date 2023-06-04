@@ -14,7 +14,6 @@ Terminal state:
 {pane_text}
 User's request: 
 {user_input}
-user's request: {user_input}
 "#;
 
 const TELL_SYSTEM_WITHOUT_PANE: &'static str = r#"
