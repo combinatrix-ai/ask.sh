@@ -136,7 +136,7 @@ fn post_process(text: &str) -> Vec<String> {
 
 // Examples:
 // echo "Hey what's up?" | ai
-// ai Hey wthat's up?
+// ai Hey what's up?
 
 fn main() {
     // if run with --debug_ai_sh, then set debug_mode to true
@@ -247,7 +247,7 @@ fn main() {
         eprintln!("pane_text: {}", pane_text);
     }
 
-    // disbale send_pane if pane_text is not empty
+    // disable send_pane if pane_text is not empty
     if pane_text == "" && send_pane == true {
         if debug_mode {
             eprintln!("pane_text is empty, so I set no_pane to true");
