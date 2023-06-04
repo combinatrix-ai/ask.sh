@@ -215,7 +215,7 @@ This project is licensed under the terms of the MIT license.
   - This environment variable is just passed to OpenAI API. So you can use whatever model OpenAI serves.
 - Currently, default model is set to `gpt-3.5-turbo`.
 
-### Why Rust?
+#### Why Rust?
 
 - It's just because shell tools should have less dependencies!
 - There's no standard way in Python to make a command available to everywhere. 
