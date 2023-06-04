@@ -134,9 +134,9 @@ The selected command is typed into the shell directly. Just hit enter to execute
 
 You won't struggle text-selection on terminal!
 
-## OS / Architrecture aware solutions!
+## OS / CPU arch / Shell aware solutions!
 
-`ask` command is aware of your OS and architecture. So you can ask OS / architecture specific questions.
+`ask` command is aware of your shell, OS, and CPU arch. So you can ask shell, OS, and CPU arch specific questions.
 
 ```
 ❯ ask how to install tmux
