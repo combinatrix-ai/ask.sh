@@ -12,6 +12,8 @@ AI Terminal Assistant is your coding companion that provides AI insights at your
 - `ask`: Query the AI for anything right from your terminal
 - `fill`: Let the AI suggest commands, which you can directly input to the shell
 
+# What's this?
+
 ## Query the AI from Your Terminal
 
 No need to bother with a separate browser. Consult the AI about anything directly from your terminal. Here's an example:
@@ -122,7 +124,7 @@ This will create a file of size 5GB with all bits set to 0.
 Then, you get overlay selector (peco) to select the best command.
 
 ```
-QUERY>            IgnoreCase [1 (1/1)]
+AI suggested commands (Enter to use / Ctrl+C to exit):       
 fallocate -l 5G filename
 fallocate -l 5G -z filename
 ```
@@ -166,6 +168,9 @@ That's it! Now you can use tmux on your macOS machine.
 
 Perfect! Isn't it? (Some may not like homebrew though...)
 
+# Want to see more?
+
+See [examples](https://github.com/hmirin/ai.sh/blob/main/examples.md)!
 
 # Setup
 
