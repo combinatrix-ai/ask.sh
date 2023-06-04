@@ -23,7 +23,7 @@ No need to bother with a separate browser. Consult the AI about anything directl
 The AI responds:
 
 ```
-❯ ai how to unzip tar gz
+❯ ask how to unzip tar gz
 To unzip a tar.gz file, you can use the following command in a terminal:
 
 `tar -xzf file.tar.gz`
@@ -51,13 +51,13 @@ rm: .git: is a directory
 
 Just ask AI:
 ```
-❯ ai what does this mean
+❯ ask what does this mean
 ```
 
 The AI responds:
 
 ```
-❯ ai what does this mean
+❯ ask what does this mean
 The message "is a directory" means that you are trying to remove a directory (in this case, the .git directory). In order to remove a directory, you need to use the command "rm -r" instead of just "rm". The "-r" flag tells the "rm" command to remove directories recursively. However, be careful when using this command as it can delete multiple files and directories at once.
 ```
 
@@ -171,9 +171,9 @@ function fill() {
 }
 ```
 
-#### Bash
+#### Bash and others
 
-- If you use bash, you can't directly type the AI suggested commands because bash doesn't allow.
+- If you use Bash, you can't directly type the AI suggested commands because bash doesn't allow.
 - However, the code below insert the selected command to the end of history. Thus you can use the command if you push up key.
 
 ```shell
@@ -182,7 +182,10 @@ fill() {
 }
 ```
 
-# 
+# Extras!
+
+- We will soon release a Chrome Extension that will let you open chat.openai.com with the terminal output.
+- If you want more, please let us know by creating an issue! (But note that I'm a little busy these days.)
 
 
 # License
