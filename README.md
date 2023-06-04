@@ -167,7 +167,8 @@ If you just want `ask` command, you can safely skip here.
 
 ```shell
 function fill() {
-    echo "$@" | ask --fill | peco | print -z 
+    command=`echo "$@" | ask --fill 2> >(cat 1>&2) | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
+    print -z $command
 }
 ```
 
@@ -178,7 +179,8 @@ function fill() {
 
 ```shell
 fill() {
-    echo "$@" | ask --fill | peco | xargs -I {} history -s {}
+  command=`echo "$@" | ask --fill 2> >(cat 1>&2) | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
+  history -s $command
 }
 ```
 

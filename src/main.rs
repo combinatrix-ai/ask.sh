@@ -110,28 +110,36 @@ async fn chat(
 }
 
 fn post_process(text: &str) -> Vec<String> {
-    // let mut commands = Vec::new();
-    // let lines: Vec<&str> = text.split("\n").collect();
-    // // filter line with Next command:
-    // let mut command_lines = String::new();
-    // for line in lines {
-    //     if line.contains("Next command:") {
-    //         command_lines += &(" ".to_owned() + &line.to_string());
-    //     }
-    // }
-    // // extract all text ` ` using Regex from var text and push to commands
-    // let re = Regex::new(r#"\`(.+?)\`"#).unwrap();
-    // re.captures_iter(&command_lines).for_each(|cap| {
-    //     commands.push(cap[1].to_string());
-    // });
-
-    // extract all text ``` ``` using Regex from var text and push to commands
     let mut commands = Vec::new();
-    let re = Regex::new(r#"(?m)\`\`\`(.+?)\`\`\`"#).unwrap();
-    re.captures_iter(&text).for_each(|cap| {
-        commands.push(cap[1].to_string().replace("\n", " ").trim().to_owned());
+    // extract all commands enclosed in ``` ```
+    let re = Regex::new(r#"```(.+?)```"#).unwrap();
+    re.captures_iter(&text.replace("\n", ";")).for_each(|cap| {
+        commands.push(cap[1].to_string().replace("\n", " ").trim_start_matches(";").trim_end_matches(";").trim().to_owned());
     });
-    commands
+    // extract all commands enclosed in ` ` if no commands are found in ``` ```
+    if commands.len() == 0 {
+        let re = Regex::new(r#"`(.+?)`"#).unwrap();
+        re.captures_iter(&text.replace("\n", ";")).for_each(|cap| {
+            commands.push(cap[1].to_string().replace("\n", " ").trim_start_matches(";").trim_end_matches(";").trim().to_owned());
+        });
+    }
+    // deduplicate with keeping the order
+    // count the number of occurences of each command
+    let mut counts = std::collections::HashMap::new();
+    for command in &commands {
+        let count = counts.entry(command).or_insert(0);
+        *count += 1;
+    }
+    // add only the first occurence of each command to deduped_commands
+    // TODO: not elegant
+    let mut deduped_commands: Vec<String> = Vec::new();
+    for command in &commands {
+        if deduped_commands.contains(&command) {
+        } else {
+            deduped_commands.push(command.to_string());
+        }
+    }
+    deduped_commands
 }
 
 // Examples:
