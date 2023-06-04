@@ -47,9 +47,14 @@ In this command, replace `input.mp4` with the filename of your input video and `
 
 # AI can customize the answer to your environment.
 
+Let's ask:
+
+```shell
+❯ ask write a function which list all directories and show as completion candidates
+```
+
 If you're using Zsh:
 ````shell
-❯ ask write a function which list all directories and show as completion candidates
 To list all directories and show them as completion candidates, you can define the following function in your shell configuration file (e.g. ~/.zshrc):
 listdirs() {
     compadd -- $(find . -type d ! -name . -maxdepth 1 -print0 | xargs -0 -n1 basename)
