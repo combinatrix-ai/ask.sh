@@ -7,6 +7,7 @@ use std::io::{self, BufRead};
 use std::process;
 mod messages;
 use serde::Serialize;
+use std::env::consts::{ARCH, OS};
 
 // args
 const ARG_DEBUG: &'static str = "--debug_ai_sh";
@@ -58,6 +59,13 @@ struct Message {
 struct Payload {
     model: String,
     messages: Vec<Message>,
+}
+
+struct UserInfo {
+    arch: String,
+    os: String,
+    shell: String,
+    // TODO: add distro info if linux
 }
 
 
@@ -203,6 +211,27 @@ fn main() {
         pane_text = pane_text_lines.join("\n");
     }
 
+    // get user's shell name
+    let shell = match env::var("SHELL") {
+        Ok(val) => val,
+        Err(_e) => {
+            eprintln!("SHELL environment variable cannot read.");
+            "".to_string()
+        }
+    };
+    // print user info
+    if debug_mode {
+        eprintln!("OS: {}", OS);
+        eprintln!("osArch: {}", ARCH);
+        eprintln!("shell: {}", shell);
+    }
+
+    let user_info: UserInfo = UserInfo {
+        arch: ARCH.to_string(),
+        os: OS.to_string(),
+        shell: shell,
+    };
+
 
     let text: String;
     // if ai is given with other arguments than --debug_ai_sh or --no_pane or --fill, then use that args
@@ -278,6 +307,9 @@ fn main() {
     let mut vars = std::collections::HashMap::new();
     vars.insert("pane_text".to_owned(), pane_text.to_owned());
     vars.insert("user_input".to_owned(), text.to_owned());
+    vars.insert("user_os".to_owned(), user_info.os.to_owned());
+    vars.insert("user_arch".to_owned(), user_info.arch.to_owned());
+    vars.insert("user_shell".to_owned(), user_info.shell.to_owned());
     let system_message = if fill_mode {
         if send_pane {
             // templates.render("fill_system_with_pane", &vars).unwrap()

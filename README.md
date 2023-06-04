@@ -134,6 +134,39 @@ The selected command is typed into the shell directly. Just hit enter to execute
 
 You won't struggle text-selection on terminal!
 
+## OS / Architrecture aware solutions!
+
+`ask` command is aware of your OS and architecture. So you can ask OS / architecture specific questions.
+
+```
+❯ ask how to install tmux
+```
+
+The AI responds:
+````
+❯ ask how to install tmux
+To install tmux on your macOS machine, you can use Homebrew package manager. Here are the steps:
+
+1. Open the terminal.
+
+2. Install Homebrew package manager by running the following command:
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+3. Once Homebrew is installed, install tmux:
+```
+brew install tmux
+```
+
+4. Wait for the installation to complete.
+
+That's it! Now you can use tmux on your macOS machine.
+````
+
+Perfect! Isn't it? (Some may not like homebrew though...)
+
+
 # Setup
 
 ## Presiquities
