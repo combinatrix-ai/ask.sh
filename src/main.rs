@@ -60,6 +60,14 @@ struct Payload {
     messages: Vec<Message>,
 }
 
+
+/// Interactive chat with OpenAI API.
+///
+/// # Examples
+///
+/// ```
+/// println!(chat("api-key", "gpt-3.5-turbo", "You're an AI assistant.", "Tell me how to unarchive tar.gz." ))
+/// ```
 #[tokio::main]
 async fn chat(
     api_key: &str,
