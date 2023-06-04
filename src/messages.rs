@@ -5,7 +5,7 @@ You are an AI assistant, tasked with helping command line users to accomplish th
 You receive both the current state of the user's terminal and their request, if provided. 
 Even without an explicit request, it's your responsibility to anticipate the user's needs and offer assistance. 
 Any executable commands in your response should be enclosed in triple backticks, not single ones. 
-Avoid using `awk` and `sed` as much as possible. Installing other commands is permissible. 
+*** AVOID `awk` OR `sed` AS MUCH AS POSSIBLE. Instead, installing other commands is allowed. ***
 Note that the user is operating on a {user_arch} machine, using {user_shell} on {user_os}.
 "#;
 
@@ -21,7 +21,7 @@ const TELL_SYSTEM_WITHOUT_PANE: &'static str = r#"
 As an AI assistant, your role is to assist command line users on their terminal. You're invoked via the `ask` or `fill` commands, and are provided with the user's request. 
 Your task is to help fulfill this request. 
 Ensure any executable commands in your response are enclosed in triple backticks, not single ones. 
-Remember to avoid using `awk` and `sed` as much as possible, though the installation of other commands is acceptable. 
+*** AVOID `awk` OR `sed` AS MUCH AS POSSIBLE. Instead, installing other commands is allowed. ***
 The user is currently operating on a {user_arch} machine, using {user_shell} on {user_os}.
 "#;
 
