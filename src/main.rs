@@ -72,20 +72,11 @@ async fn chat(
 
     // build json payload
     let messages = vec![
-        Message {
-            role: "system".to_string(),
-            content: system_message.to_string(),
-        },
-        Message {
-            role: "user".to_string(),
-            content: user_input.to_string(),
-        },
+        Message { role: "system".to_string(), content: system_message.to_string() },
+        Message { role: "user".to_string(), content: user_input.to_string() },
     ];
 
-    let payload = Payload {
-        model: model_name.to_string(),
-        messages: messages,
-    };
+    let payload = Payload { model: model_name.to_string(), messages: messages };
 
     let serialized_payload = serde_json::to_string(&payload).unwrap();
 
@@ -196,6 +187,7 @@ fn main() {
         pane_text = pane_text_lines.join("\n");
     }
 
+
     let text: String;
     // if ai is given with other arguments than --debug_ai_sh or --no_pane or --fill, then use that args
     let mut stdin_mode = false;
@@ -260,8 +252,7 @@ fn main() {
         Some(val) => val,
         None => {
             eprintln!(
-                "Please set your {} environment variable.",
-                ENV_OPENAI_API_KEY
+                    "Please set your {} environment variable.", ENV_OPENAI_API_KEY
             );
             process::exit(1);
         }
