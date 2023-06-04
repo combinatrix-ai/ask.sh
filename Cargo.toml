@@ -1,6 +1,6 @@
 [package]
 name = "ai-sh"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["hmirin <hmirin@example.com>"]
 description = "An AI command line assistant, which is context-aware and multi-turn capable."
