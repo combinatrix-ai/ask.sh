@@ -62,6 +62,27 @@ Great! Isn't it?
 
 Note: You need to use tmux to use this feature. See [#tmux].
 
+## Multiturn Conversations with AI in Your Terminal
+
+By understanding the context of your terminal, `ai.sh` is not just about asking questions and receiving answers; it's about engaging in an insightful dialogue that spans multiple turns. Here's a peek into what that might look like:
+
+```
+❯ git init
+Reinitialized existing Git repository in /Users/yotaro/projects/llm-demo/ai.sh/.git/
+``
+
+Do you know what exactly happen when you `git init` again? Let's ask:
+```
+❯ ask what does reinitialized mean
+"Reinitialized" means that Git has reset the repository's initialization parameters. When you run `git init` in an existing Git repository, Git will re-run the repository's initialization process, but with the existing repository metadata in place. This allows you to reset the repository configuration without losing the existing commit history and other Git metadata.
+```
+
+Hmm, still have question? Ask again:
+
+❯ ask what configuration is reset
+When you run init` with the `--reinitialize` or `-o` option, Git will re-run the repository's initialization process, but with the existing repository metadata in place. This allows you to reset the repository configuration without losing the existing commit history and other Git metadata. The specific configuration that is reset depends on what options you passed to `git init`. If you did not pass any options, then Git will reset all initialization parameters to their default values. Is there anything else I can help you with?
+```
+
 ## Let the AI Write to Your Terminal Directly!
 
 `fill` command let you type the command AI suggests directly to the shell.
@@ -72,7 +93,7 @@ Ask AI to make command like this:
 ❯ fill allocate 5GB file here
 ````
 
-The AI responds:
+The AI responds with some suggestions of the command:
 
 ````
 To allocate a 5GB file here, you can use the `fallocate` command. `fallocate` can be used to allocate space for a file using either the preallocated or the zeroed method.
@@ -94,7 +115,7 @@ fallocate -l 5G -z filename
 This will create a file of size 5GB with all bits set to 0.
 ````
 
-Then, you get overlay selector (peco) to select the best command. 
+Then, you get overlay selector (peco) to select the best command.
 
 ```
 QUERY>            IgnoreCase [1 (1/1)]
@@ -106,6 +127,8 @@ The selected command is typed into the shell directly. Just hit enter to execute
 ```
 ❯ fallocate -l 5G filename
 ```
+
+You won't struggle text-selection on terminal!
 
 # Setup
 
@@ -178,3 +201,9 @@ This project is licensed under the terms of the MIT license.
 - ai.sh use `tmux capture-pane -p` to get the current terminal status. Therefore, if you run `ask` and `fill` in tmux pane, text on the pane will be sent to the OpenAI.
 - This will give AI the context of your request and improve the result.
 - If you don't want to use this feature, set `AI_SH_NO_PANE=true` in your shell.
+
+#### Can I use GPT-4?
+
+- Yes! You can use GPT-4 by setting the environmanet_variable `AI_SH_OPENAI_MODEL=gpt-4`.
+  - This environment variable is just passed to OpenAI API. So you can use whatever model OpenAI serves.
+- Currently, default model is set to `gpt-3.5-turbo`.

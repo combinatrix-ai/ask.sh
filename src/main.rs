@@ -6,15 +6,34 @@ use std::env;
 use std::io::{self, BufRead};
 use std::process;
 mod messages;
+use serde::Serialize;
+
+// args
+const ARG_DEBUG: &'static str = "--debug_ai_sh";
+const ARG_NO_PANE: &'static str = "--no_pane";
+const ARG_FILL: &'static str = "--fill";
+// env
+const ENV_DEBUG: &'static str = "AI_SH_DEBUG";
+const ENV_NO_PANE: &'static str = "AI_SH_NO_PANE";
+const ENV_OPENAI_API_KEY: &'static str = "AI_SH_OPENAI_API_KEY";
+const ENV_OPENAI_MODEL: &'static str = "AI_SH_OPENAI_MODEL";
 
 fn get_openai_api_key() -> Option<String> {
     dotenv().ok();
-    env::var("OPENAI_API_KEY").ok()
+    env::var(ENV_OPENAI_API_KEY).ok()
+}
+
+fn get_openai_model_name() -> String {
+    dotenv().ok();
+    match env::var(ENV_OPENAI_MODEL) {
+        Ok(val) => val,
+        Err(_e) => "gpt-3.5-turbo".to_string(),
+    }
 }
 
 fn get_debug_mode() -> bool {
     dotenv().ok();
-    match env::var("AI_SH_DEBUG") {
+    match env::var(ENV_DEBUG) {
         Ok(val) => val.parse::<bool>().unwrap_or(false),
         Err(_e) => false,
     }
@@ -22,30 +41,59 @@ fn get_debug_mode() -> bool {
 
 fn get_ai_sh_no_pane() -> bool {
     dotenv().ok();
-    match env::var("AI_SH_NO_PANE") {
+    match env::var(ENV_NO_PANE) {
         Ok(val) => val.parse::<bool>().unwrap_or(false),
         Err(_e) => false,
     }
 }
 
+// json structure
+#[derive(Serialize)]
+struct Message {
+    role: String,
+    content: String,
+}
+
+#[derive(Serialize)]
+struct Payload {
+    model: String,
+    messages: Vec<Message>,
+}
+
 #[tokio::main]
-async fn chat(api_key: &str, user_input: &str, system_message: &str, debug_mode: &bool) -> String {
+async fn chat(
+    api_key: &str,
+    model_name: &str,
+    user_input: &str,
+    system_message: &str,
+    debug_mode: &bool,
+) -> String {
     let openai_stream = OpenAIStream::new(api_key.to_string());
 
-    let system_message = system_message.replace("\n", "\\n");
-    let user_input = user_input.replace("\n", "\\n");
+    // build json payload
+    let messages = vec![
+        Message {
+            role: "system".to_string(),
+            content: system_message.to_string(),
+        },
+        Message {
+            role: "user".to_string(),
+            content: user_input.to_string(),
+        },
+    ];
 
-    let input = format!(
-        r#"{{"model": "gpt-3.5-turbo","messages": [{{"role": "system","content": "{system_message}"}},{{"role": "user","content": "{user_input}"}}]}}"#,
-        system_message = system_message,
-        user_input = user_input
-    );
+    let payload = Payload {
+        model: model_name.to_string(),
+        messages: messages,
+    };
+
+    let serialized_payload = serde_json::to_string(&payload).unwrap();
 
     // print input
     if *debug_mode {
-        eprintln!("api call text\n{}\n", input);
+        eprintln!("API Call:\n{}\n", serialized_payload);
     }
-    let gpt_stream = openai_stream.gpt_stream(&input).await.unwrap();
+    let gpt_stream = openai_stream.gpt_stream(&serialized_payload).await.unwrap();
     let mut gpt_stream = Box::pin(gpt_stream);
 
     let mut n_char = 0;
@@ -62,23 +110,27 @@ async fn chat(api_key: &str, user_input: &str, system_message: &str, debug_mode:
     return response_to_return;
 }
 
-fn post_process(text: &str, _debug_mode: bool) -> Vec<String> {
-    let mut commands = Vec::new();
-    // if debug_mode {
-    //     eprintln!("\nAPI response\n{}\n", text);
+fn post_process(text: &str) -> Vec<String> {
+    // let mut commands = Vec::new();
+    // let lines: Vec<&str> = text.split("\n").collect();
+    // // filter line with Next command:
+    // let mut command_lines = String::new();
+    // for line in lines {
+    //     if line.contains("Next command:") {
+    //         command_lines += &(" ".to_owned() + &line.to_string());
+    //     }
     // }
-    let lines: Vec<&str> = text.split("\n").collect();
-    // filter line with Next command:
-    let mut command_lines = String::new();
-    for line in lines {
-        if line.contains("Next command:") {
-            command_lines += &(" ".to_owned() + &line.to_string());
-        }
-    }
-    // extract all text ` ` using Regex from var text and push to commands
-    let re = Regex::new(r#"\`(.+?)\`"#).unwrap();
-    re.captures_iter(&command_lines).for_each(|cap| {
-        commands.push(cap[1].to_string());
+    // // extract all text ` ` using Regex from var text and push to commands
+    // let re = Regex::new(r#"\`(.+?)\`"#).unwrap();
+    // re.captures_iter(&command_lines).for_each(|cap| {
+    //     commands.push(cap[1].to_string());
+    // });
+
+    // extract all text ``` ``` using Regex from var text and push to commands
+    let mut commands = Vec::new();
+    let re = Regex::new(r#"(?m)\`\`\`(.+?)\`\`\`"#).unwrap();
+    re.captures_iter(&text).for_each(|cap| {
+        commands.push(cap[1].to_string().replace("\n", " ").trim().to_owned());
     });
     commands
 }
@@ -89,24 +141,67 @@ fn post_process(text: &str, _debug_mode: bool) -> Vec<String> {
 
 fn main() {
     // if run with --debug_ai_sh, then set debug_mode to true
-    let debug_mode = if env::args().any(|arg| arg == "--debug_ai_sh") {
+    let debug_mode = if env::args().any(|arg| arg == ARG_DEBUG) {
         true
     } else {
         false
     };
     // if run with --no_pane or -n, then set not_send_pane to true
-    let mut no_pane = if env::args().any(|arg| arg == "--no_pane") {
+    let no_pane_arg_var = if env::args().any(|arg| arg == ARG_NO_PANE) {
         true
     } else {
         false
     };
+    let no_pane_env_var = get_ai_sh_no_pane();
+    // if no_pane is defined by any of the two variables. Do not send pane.
+    let mut send_pane: bool = !no_pane_env_var && !no_pane_arg_var;
+
+    // run tmux capture-pane -p before anything is printed.
+    // if run with no_pane, pane_text is empty string.
+    // if run without no_pane, execute shell command tmux capture-pane -p, when the command fail, pane_text return empty string
+    // when fail, print error message to stderr
+    let mut pane_text: String = "".to_string();
+    if send_pane {
+        {
+            // check if in tmux session
+            let mut in_tmux = false;
+            match env::var("TMUX") {
+                Ok(_value) => in_tmux = true,
+                Err(_e) => {
+                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ai.sh/blob/master/README.md#tmux for more information. If you no longer want to see this message, run ai.sh with --no_pane option or set AI_SH_NO_PANE=true. ***\n")
+                }
+            }
+            if in_tmux {
+                match std::process::Command::new("tmux")
+                    .arg("capture-pane")
+                    .arg("-p")
+                    .output()
+                {
+                    Ok(output) => pane_text = String::from_utf8_lossy(&output.stdout).to_string(),
+                    Err(e) => {
+                        eprintln!("Somehow tmux capture-pane -p failed: {}", e);
+                    }
+                }
+            } else {
+            }
+        }
+    };
+    // remove last empty lines from pane_text
+    let mut pane_text = pane_text.trim_end().to_string();
+    // remove last line of pane_text
+    if pane_text != "" {
+        let pane_text_lines: Vec<&str> = pane_text.split("\n").collect();
+        let mut pane_text_lines = pane_text_lines;
+        pane_text_lines.pop();
+        pane_text = pane_text_lines.join("\n");
+    }
 
     let text: String;
-    // if ai is given with other arguments than --debug_ai_sh or --no_pane, then use that args
-    let stdin_mode = false;
+    // if ai is given with other arguments than --debug_ai_sh or --no_pane or --fill, then use that args
+    let mut stdin_mode = false;
     if env::args()
         .skip(1)
-        .any(|arg| arg != "--debug_ai_sh" && arg != "--no_pane")
+        .any(|arg| arg != ARG_DEBUG && arg != ARG_NO_PANE && arg != ARG_FILL)
     {
         if debug_mode {
             eprintln!(
@@ -114,12 +209,21 @@ fn main() {
                 env::args().skip(1)
             );
         }
-        text = env::args().skip(1).collect::<Vec<String>>().join(" ");
+        text = env::args()
+            .skip(1)
+            .filter(|arg| arg != ARG_DEBUG && arg != ARG_NO_PANE && arg != ARG_FILL)
+            .collect::<Vec<String>>()
+            .join(" ");
     } else {
         // read from stdin
         text = io::stdin().lock().lines().next().unwrap().unwrap();
-        let _stdin_mode = true;
+        stdin_mode = true;
         // TODO: if stdin is empty, timeout and exit
+    }
+
+    if debug_mode {
+        eprintln!("stdin_mode: {}", stdin_mode);
+        eprintln!("text: {}", text);
     }
 
     // if false, read global mode
@@ -129,8 +233,8 @@ fn main() {
         eprintln!("debug_mode: {}", debug_mode);
     }
 
-    // if stdin_mode and run with --fill or -f, then set fill_mode to true
-    let fill_mode = if stdin_mode && env::args().any(|arg| arg == "--fill" || arg == "-f") {
+    // if stdin_mode and run with --fill, then set fill_mode to true
+    let fill_mode = if stdin_mode && env::args().any(|arg| arg == ARG_FILL) {
         true
     } else {
         false
@@ -139,60 +243,26 @@ fn main() {
         eprintln!("fill_mode: {}", fill_mode);
     }
 
-    // if run with no_pane, pane_text is empty string.
-    // if run without no_pane, execute shell command tmux capture-pane -p, when the command fail, pane_text return empty string
-    // when fail, print error message to stderr
-    let mut pane_text: String = "".to_string();
-    if !no_pane {
-        // check if in tmux session
-        let mut in_tmux = false;
-        match env::var("TMUX") {
-            Ok(_value) => in_tmux = true,
-            Err(_e) => {
-                if !get_ai_sh_no_pane() {
-                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ai.sh/blob/master/README.md#tmux for more information. If you no longer want to see this message, run ai.sh with --no_pane option or set AI_SH_NO_PANE=true. ***\n")
-                } else {
-                }
-            }
-        }
-        if in_tmux {
-            match std::process::Command::new("tmux")
-                .arg("capture-pane")
-                .arg("-p")
-                .output()
-            {
-                Ok(output) => pane_text = String::from_utf8_lossy(&output.stdout).to_string(),
-                Err(e) => {
-                    eprintln!("Somehow tmux capture-pane -p failed: {}", e);
-                }
-            }
-        } else {
-        }
-    };
     if debug_mode {
         eprintln!("pane_text: {}", pane_text);
     }
 
-    // fix no_pane
-    if pane_text == "" && no_pane == false {
+    // disbale send_pane if pane_text is not empty
+    if pane_text == "" && send_pane == true {
         if debug_mode {
             eprintln!("pane_text is empty, so I set no_pane to true");
         }
-        no_pane = true;
-    } else {
-    }
-    if pane_text != "" && no_pane == true {
-        if debug_mode {
-            eprintln!("pane_text is not empty, so I set no_pane to false");
-        }
-        no_pane = false;
+        send_pane = false;
     } else {
     }
 
     let api_key = match get_openai_api_key() {
         Some(val) => val,
         None => {
-            eprintln!("Please set your OPENAI_API_KEY environment variable.");
+            eprintln!(
+                "Please set your {} environment variable.",
+                ENV_OPENAI_API_KEY
+            );
             process::exit(1);
         }
     };
@@ -202,34 +272,46 @@ fn main() {
     vars.insert("pane_text".to_owned(), pane_text.to_owned());
     vars.insert("user_input".to_owned(), text.to_owned());
     let system_message = if fill_mode {
-        if !no_pane {
-            templates.render("fill_system_with_pane", &vars).unwrap()
+        if send_pane {
+            // templates.render("fill_system_with_pane", &vars).unwrap()
+            templates.render("tell_system_with_pane", &vars).unwrap()
         } else {
-            templates.render("fill_system_without_pane", &vars).unwrap()
+            // templates.render("fill_system_without_pane", &vars).unwrap()
+            templates.render("tell_system_without_pane", &vars).unwrap()
         }
     } else {
-        if !no_pane {
-            templates.render("fill_user_with_pane", &vars).unwrap()
+        if send_pane {
+            templates.render("tell_system_with_pane", &vars).unwrap()
         } else {
-            templates.render("fill_user_without_pane", &vars).unwrap()
+            templates.render("tell_system_without_pane", &vars).unwrap()
         }
     };
-    let _user_input = if fill_mode {
-        if !no_pane {
-            templates.render("fill_user_with_pane", &vars).unwrap()
+    let user_input = if fill_mode {
+        if send_pane {
+            // templates.render("fill_user_with_pane", &vars).unwrap()
+            templates.render("tell_user_with_pane", &vars).unwrap()
         } else {
-            templates.render("fill_user_without_pane", &vars).unwrap()
+            // templates.render("fill_user_without_pane", &vars).unwrap()
+            templates.render("tell_user_without_pane", &vars).unwrap()
         }
     } else {
-        if !no_pane {
-            templates.render("fill_user_with_pane", &vars).unwrap()
+        if send_pane {
+            templates.render("tell_user_with_pane", &vars).unwrap()
         } else {
-            templates.render("fill_user_without_pane", &vars).unwrap()
+            templates.render("tell_user_without_pane", &vars).unwrap()
         }
     };
 
-    let response = chat(&api_key, &text, &system_message, &debug_mode);
-    let commands = post_process(&response, debug_mode);
+    let model_name = get_openai_model_name();
+
+    let response = chat(
+        &api_key,
+        &model_name,
+        &user_input,
+        &system_message,
+        &debug_mode,
+    );
+    let commands = post_process(&response);
 
     // if fill_mode is true, then print the possible commands
     if fill_mode {

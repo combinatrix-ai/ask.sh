@@ -1,7 +1,7 @@
 use tinytemplate::TinyTemplate;
 
 const FILL_SYSTEM_WITH_PANE: &'static str = r#"
-You're an AI assistant that helps command line user on the terminal.
+You're an AI assistant that helps command line user on the terminal. You're called from `ask` or `fill` command.
 You're given the current state of the user's terminal and user's request (if any).
 You must output the most probable commands the user would want.
 You must fill the placeholders as much as possible, condiering the captured pane which provide the context of the user's goal.
@@ -35,7 +35,7 @@ user's request: {user_input}
 "#;
 
 const FILL_SYETEM_WITHOUT_PANE: &'static str = r#"
-You're an AI assistant that helps command line user on the terminal.
+You're an AI assistant that helps command line user on the terminal. You're called from `ask` or `fill` command.
 You're given the user's request.
 You must output the most probable commands the user would want.
 Your output should be formatted as below:
@@ -65,7 +65,7 @@ user's request: {user_input}
 "#;
 
 const TELL_SYSTEM_WITH_PANE: &'static str = r#"
-You're an AI assistant that helps command line user to achieve their goal.
+You're an AI assistant that helps command line user to achieve their goal. You're called from `ask` or `fill` command.
 You're given the current state of the user's terminal and user's request (if any).
 Even if no user's request is input, you must speculate the user's intention and help them accordingly.
 "#;
@@ -78,7 +78,7 @@ user's request: {user_input}
 "#;
 
 const TELL_SYSTEM_WITHOUT_PANE: &'static str = r#"
-You're an AI assistant that helps command line user on the terminal.
+You're an AI assistant that helps command line user on the terminal. You're called from `ask` or `fill` command.
 You're given the user's request. Help them by their request.
 "#;
 
