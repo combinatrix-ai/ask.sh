@@ -34,7 +34,7 @@ current state of the user's terminal:
 user's request: {user_input}
 "#;
 
-const FILL_SYETEM_WITHOUT_PANE: &'static str = r#"
+const FILL_SYSTEM_WITHOUT_PANE: &'static str = r#"
 You're an AI assistant that helps command line user on the terminal. You're called from `ask` or `fill` command.
 You're given the user's request.
 You must output the most probable commands the user would want.
@@ -92,7 +92,7 @@ pub fn get_template() -> TinyTemplate<'static> {
     let _ = templates.add_template("fill_user_with_pane", FILL_USER_WITH_PANE);
     let _ = templates.add_template("tell_system_with_pane", TELL_SYSTEM_WITH_PANE);
     let _ = templates.add_template("tell_user_with_pane", TELL_USER_WITH_PANE);
-    let _ = templates.add_template("fill_system_without_pane", FILL_SYETEM_WITHOUT_PANE);
+    let _ = templates.add_template("fill_system_without_pane", FILL_SYSTEM_WITHOUT_PANE);
     let _ = templates.add_template("fill_user_without_pane", FILL_USER_WITHOUT_PANE);
     let _ = templates.add_template("tell_system_without_pane", TELL_SYSTEM_WITHOUT_PANE);
     let _ = templates.add_template("tell_user_without_pane", TELL_USER_WITHOUT_PANE);
