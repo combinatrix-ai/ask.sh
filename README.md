@@ -177,7 +177,7 @@ See [examples](https://github.com/hmirin/ai.sh/blob/main/examples.md)!
 
 # Setup
 
-## Presiquities
+## Prerequisites
 
 If you just want `ask` command:
 - rust
@@ -187,7 +187,7 @@ If you also want `fill` command:
 
 If you want `fill` command to work more nicely:
 - `tmux`: If you run ai.sh in tmux, you can send the current terminal to the AI for context-aware input.
-- `zsh`: If you run ai.sh in zsh (not Bash), you can fill the next command directly. No copy-paste required.
+- `zsh`: If you run ai.sh in zsh (not Bash), you can fill the next command directly. No copy-paste is required.
 
 ## Installation
 
@@ -204,7 +204,7 @@ If you just want `ask` command, you can safely skip here.
 #### zsh (recommended)
 
 - If you use zsh, write this to the end of .zshrc
-  - `fill` command which let you directly type the AI suggested commands.
+  - `fill` command which lets you directly type the AI suggested commands.
 
 ```shell
 function fill() {
