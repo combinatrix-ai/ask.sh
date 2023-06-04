@@ -2,7 +2,7 @@
 
 (This section is entirely written by ChatGPT.)
 
-Welcome to a revolutionary way of interacting with your terminal - meet ai.sh. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you with an interactive, context-aware dialogue right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command-line productivity.
+Welcome to a revolutionary way of interacting with your terminal - meet `ai.sh`. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you with an interactive, context-aware dialogue right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command-line productivity.
 
 ai.sh is your coding companion that offers AI insights at your command, simplifying your coding journey. Welcome to the future of coding!
 
@@ -16,6 +16,8 @@ ai.sh is your coding companion that offers AI insights at your command, simplify
 # Demo
 Download iris dataset, do some analysis, all by shell commands without leaving the terminal. (Played in 3x. Using GPT-4)
 ![Demo GIF](https://github.com/hmirin/ai.sh/assets/1284876/93f54d0f-3ae8-4178-8e8e-201da7314441)
+
+You might be interested in [other examples](examples.md)
 
 # Commands
 
