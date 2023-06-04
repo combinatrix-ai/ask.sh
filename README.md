@@ -2,9 +2,16 @@
 
 (This section is entirely written by ChatGPT.)
 
-Welcome to a revolutionary way of interacting with your terminal - the AI Terminal Assistant. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you an interactive, context-aware dialog right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command line productivity.
+Welcome to a revolutionary way of interacting with your terminal - meet ai.sh. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you with an interactive, context-aware dialogue right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command-line productivity.
 
-AI Terminal Assistant is your coding companion that provides AI insights at your command, simplifying your coding journey. Welcome to the future of coding!
+ai.sh is your coding companion that offers AI insights at your command, simplifying your coding journey. Welcome to the future of coding!
+
+- Key Features
+  - [Query the AI from Your Terminal](#query-the-ai-from-your-terminal)
+  - [The AI Understands Your Context!](#the-ai-understands-your-context)
+  - [Multiturn Conversations with AI in Your Terminal](#multiturn-conversations-with-ai-in-your-terminal)
+  - [Let the AI Write to Your Terminal Directly!](#let-the-ai-write-to-your-terminal-directly)
+  - [OS / CPU arch / Shell Aware Conversation!](#os--cpu-arch--shell-aware-conversations)
 
 # Demo
 Download iris dataset, do some analysis, all by shell commands without leaving the terminal. (Played in 3x. Using GPT-4)
@@ -15,7 +22,7 @@ Download iris dataset, do some analysis, all by shell commands without leaving t
 - `ask`: Query the AI for anything right from your terminal
 - `fill`: Let the AI suggest commands, which you can directly input to the shell
 
-# What's this?
+# Key Features
 
 ## Query the AI from Your Terminal
 
@@ -139,7 +146,7 @@ The selected command is typed into the shell directly. Just hit enter to execute
 
 You won't struggle text-selection on terminal!
 
-## OS / CPU arch / Shell aware solutions!
+## OS / CPU arch / Shell Aware Conversations!
 
 `ask` command is aware of your shell, OS, and CPU arch. So you can ask shell, OS, and CPU arch specific questions.
 
@@ -262,3 +269,6 @@ This project is licensed under the terms of the MIT license.
 
 - It's just because shell tools should have less dependencies!
 - There's no standard way in Python to make a command available to everywhere. 
+
+# Contributing
+- Of course, we welcome contributions! Please feel free to open an issue or submit a pull request.
