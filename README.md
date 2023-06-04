@@ -63,7 +63,7 @@ The message "is a directory" means that you are trying to remove a directory (in
 
 Great! Isn't it?
 
-Note: You need to use tmux to use this feature. See [#tmux].
+Note: You need to use tmux to use this feature. See [Q&A](#how-aish-send-the-current-output-of-terminal).
 
 ## Multiturn Conversations with AI in Your Terminal
 
@@ -82,6 +82,7 @@ Do you know what exactly happen when you `git init` again? Let's ask:
 
 Hmm, still have question? Ask again:
 
+```
 ❯ ask what configuration is reset
 When you run init` with the `--reinitialize` or `-o` option, Git will re-run the repository's initialization process, but with the existing repository metadata in place. This allows you to reset the repository configuration without losing the existing commit history and other Git metadata. The specific configuration that is reset depends on what options you passed to `git init`. If you did not pass any options, then Git will reset all initialization parameters to their default values. Is there anything else I can help you with?
 ```
