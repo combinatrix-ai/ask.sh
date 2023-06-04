@@ -5,7 +5,7 @@ use regex::Regex;
 use std::env;
 use std::io::{self, BufRead};
 use std::process;
-mod messages;
+mod prompts;
 use serde::Serialize;
 use std::env::consts::{ARCH, OS};
 
@@ -327,7 +327,7 @@ fn main() {
         }
     };
 
-    let templates = messages::get_template();
+    let templates = prompts::get_template();
     let mut vars = std::collections::HashMap::new();
     vars.insert("pane_text".to_owned(), pane_text.to_owned());
     vars.insert("user_input".to_owned(), text.to_owned());
