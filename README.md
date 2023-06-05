@@ -261,6 +261,11 @@ This project is licensed under the terms of the MIT license.
 - This will give AI the context of your request and improve the result.
 - If you don't want to use this feature, set `AI_SH_NO_PANE=true` in your shell.
 
+#### Privacy concerns?
+
+- As of 5th July 2023, OpenAI [states](https://openai.com/policies/api-data-usage-policies) that they will not use data submitted by customers via their API to train or improve their models, unless you explicitly opt-in to do so.
+- And of course, you can use ai.sh without sending the current terminal output to the OpenAI server. Just set `AI_SH_NO_PANE=true` in your shell.
+
 #### Can I use GPT-4?
 
 - Yes! You can use GPT-4 by setting the environmanet_variable `AI_SH_OPENAI_MODEL=gpt-4`.
