@@ -12,7 +12,7 @@ use std::env::consts::{ARCH, OS};
 // args
 const ARG_DEBUG: &'static str = "--debug_ai_sh";
 const ARG_NO_PANE: &'static str = "--no_pane";
-const ARG_FILL: &'static str = "--fill";
+const ARG_NO_SUGGEST: &'static str = "--no_suggest";
 // env
 const ENV_DEBUG: &'static str = "AI_SH_DEBUG";
 const ENV_NO_PANE: &'static str = "AI_SH_NO_PANE";
@@ -261,7 +261,7 @@ fn main() {
     let mut stdin_mode = false;
     if env::args()
         .skip(1)
-        .any(|arg| arg != ARG_DEBUG && arg != ARG_NO_PANE && arg != ARG_FILL)
+        .any(|arg| arg != ARG_DEBUG && arg != ARG_NO_PANE && arg != ARG_NO_SUGGEST)
     {
         if debug_mode {
             eprintln!(
@@ -271,7 +271,7 @@ fn main() {
         }
         text = env::args()
             .skip(1)
-            .filter(|arg| arg != ARG_DEBUG && arg != ARG_NO_PANE && arg != ARG_FILL)
+            .filter(|arg| arg != ARG_DEBUG && arg != ARG_NO_PANE && arg != ARG_NO_SUGGEST)
             .collect::<Vec<String>>()
             .join(" ");
     } else {
@@ -293,14 +293,9 @@ fn main() {
         eprintln!("debug_mode: {}", debug_mode);
     }
 
-    // if stdin_mode and run with --fill, then set fill_mode to true
-    let fill_mode = if stdin_mode && env::args().any(|arg| arg == ARG_FILL) {
-        true
-    } else {
-        false
-    };
+    let suggest_mode = !env::args().any(|arg| arg == ARG_NO_SUGGEST);
     if debug_mode {
-        eprintln!("fill_mode: {}", fill_mode);
+        eprintln!("suggest_mode: {}", suggest_mode);
     }
 
     if debug_mode {
@@ -334,35 +329,17 @@ fn main() {
     vars.insert("user_os".to_owned(), user_info.os.to_owned());
     vars.insert("user_arch".to_owned(), user_info.arch.to_owned());
     vars.insert("user_shell".to_owned(), user_info.shell.to_owned());
-    let system_message = if fill_mode {
-        if send_pane {
-            // templates.render("fill_system_with_pane", &vars).unwrap()
-            templates.render("tell_system_with_pane", &vars).unwrap()
-        } else {
-            // templates.render("fill_system_without_pane", &vars).unwrap()
-            templates.render("tell_system_without_pane", &vars).unwrap()
-        }
+    let system_message = if send_pane {
+        templates.render("tell_system_with_pane", &vars).unwrap()
     } else {
-        if send_pane {
-            templates.render("tell_system_with_pane", &vars).unwrap()
-        } else {
-            templates.render("tell_system_without_pane", &vars).unwrap()
-        }
+        templates.render("tell_system_without_pane", &vars).unwrap()
     };
-    let user_input = if fill_mode {
-        if send_pane {
-            // templates.render("fill_user_with_pane", &vars).unwrap()
-            templates.render("tell_user_with_pane", &vars).unwrap()
-        } else {
-            // templates.render("fill_user_without_pane", &vars).unwrap()
-            templates.render("tell_user_without_pane", &vars).unwrap()
-        }
+    let user_input = if send_pane {
+        // templates.render("fill_user_with_pane", &vars).unwrap()
+        templates.render("tell_user_with_pane", &vars).unwrap()
     } else {
-        if send_pane {
-            templates.render("tell_user_with_pane", &vars).unwrap()
-        } else {
-            templates.render("tell_user_without_pane", &vars).unwrap()
-        }
+        // templates.render("fill_user_without_pane", &vars).unwrap()
+        templates.render("tell_user_without_pane", &vars).unwrap()
     };
 
     let model_name = get_openai_model_name();
@@ -376,10 +353,8 @@ fn main() {
     );
     let commands = post_process(&response);
 
-    // if fill_mode is true, then print the possible commands
-    if fill_mode {
-        for command in commands {
-            println!("{}", command);
-        }
+    // print suggested commands to stdout to further process
+    for command in commands {
+        println!("{}", command);
     }
 }
