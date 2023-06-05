@@ -34,6 +34,8 @@ Please note that using `--allow-dirty` is not recommended unless you're absolute
 
 # AI knows the options you may have never heard of.
 
+Thanks to [@xarsh](https://github.com/xarsh)
+
 ````shell
 ❯ ask create ffmpeg command that rotates input movie 90degree counterclockwise
 The `ffmpeg` command to rotate a video by 90 degrees counterclockwise is as follows:
