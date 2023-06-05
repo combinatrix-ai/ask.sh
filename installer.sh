@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 # Function to add to .zshrc
 write_function_zshrc() {
