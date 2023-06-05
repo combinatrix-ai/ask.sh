@@ -166,4 +166,17 @@ exit 1
 ;;
 esac
 
-echo "Installation complete. Please restart your shell or run 'source ~/.bashrc' or 'source ~/.zshrc' for changes to take effect."
+echo ""
+echo "Congratulations, installation is complete! 🎉"
+echo ""
+echo "To fully enjoy the benefits of this application, there are just a couple more easy steps:"
+echo ""
+echo "1. Make sure to set your AI_SH_OPENAI_API_KEY environment variable with your OpenAI API key. If you haven't got one yet, no worries, you can grab it from https://platform.openai.com/account/api-keys. This is your magic key to unlock the power of AI! 🗝️"
+echo ""
+echo "2. Now, let's get those changes live. Please restart your shell or simply run 'source ~/.bashrc' or 'source ~/.zshrc' to make the magic happen. 🚀"
+echo ""
+echo "3. Time to have some fun! Once everything's set up, you can chat with your AI by using the ask command. Why not start with \`ask hello\`? It's a great way to introduce yourself. The AI is looking forward to meeting you! 🤖"
+echo ""
+echo "For more details and guidance, our helpful guide is ready for you at https://github.com/hmirin/ai.sh/blob/main/README.md#installation."
+echo ""
+echo "Thank you for installing and we hope you enjoy exploring with AI. Happy coding! 😄"
