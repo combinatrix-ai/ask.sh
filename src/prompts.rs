@@ -18,15 +18,15 @@ Note that the user is operating on a {user_arch} machine, using {user_shell} on 
 "#;
 
 const TELL_USER_WITH_PANE: &'static str = r#"
-Terminal state: 
+Terminal state:
 {pane_text}
-User's request: 
+User's request:
 {user_input}
 "#;
 
 const TELL_SYSTEM_WITHOUT_PANE: &'static str = r#"
 As an AI assistant, your role is to assist command line users on their terminal. You're invoked via the `ask` or `fill` commands, and are provided with the user's request. 
-Your task is to help fulfill this request. 
+Your task is to help fulfill this request.
 Your answer should obey the rules below:
 - Any executable commands in your response should be enclosed in triple backticks like this:
 ```
