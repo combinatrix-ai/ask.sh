@@ -25,8 +25,14 @@ You might be interested in [other examples](examples.md)
 
 # Quick Start
 
+If you're on Bash:
 ```
-curl -sSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh | sh
+curl -sSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh | bash
+```
+
+If you're on Zsh:
+```
+curl -sSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh | zsh
 ```
 
 Then, follow the instructions. See [Setup](#setup) for manual installation.

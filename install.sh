@@ -161,15 +161,19 @@ if [ -f "$HOME/.zshrc" ]; then
 fi
 ;;
 *)
-echo "Unsupported shell. The script currently supports bash and zsh."
-exit 1
+echo "It seems you're using the shell other than bash or zsh based on $SHELL environmental variable." 
+echo "Please manually add the ask function to your rc file."
+echo "If you are using bash (or bash like shell), add the following to ~/.bashrc:"
+echo_bash_function
+echo "If you are using zsh, add the following to ~/.zshrc:"
+echo_zsh_function
 ;;
 esac
 
 echo ""
 echo "Congratulations, installation is complete! 🎉"
 echo ""
-echo "To fully enjoy the benefits of this application, there are just a couple more easy steps:"
+echo **************** To fully enjoy the benefits of this application, there are just a couple more easy steps ****************"
 echo ""
 echo "1. Make sure to set your AI_SH_OPENAI_API_KEY environment variable with your OpenAI API key. If you haven't got one yet, no worries, you can grab it from https://platform.openai.com/account/api-keys. This is your magic key to unlock the power of AI! 🗝️"
 echo ""
