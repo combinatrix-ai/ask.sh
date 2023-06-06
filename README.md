@@ -210,12 +210,9 @@ Optional, but highly recommended if you want `ask` command to work more nicely:
 
 ## Installation
 
-- In most cases, install script should work
-```
-curl -sSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh | bash
-```
-
-- If you want to install manually, follow the steps below: 
+- In most cases, [install script](#quick-start) should work.
+  - If you find any problem, please file an issue!
+- If you want to install manually, follow the steps below:
 
 1. Install crate using cargo: `cargo install ask-sh`
 2. Set `AI_SH_OPENAI_API_KEY` in your shell
