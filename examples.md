@@ -15,7 +15,7 @@ iris-with-header.csv
 iris-with-header-mean.csv
 
 to proceed despite this and include the uncommitted changes, pass the `--allow-dirty` flag
-❯ fill rm files listed above
+❯ ask rm files listed above
 I see that you want to remove the uncommitted changes in your working directory. You can use the `rm` command followed by the file names to remove them. Here's the command that you can use:
 
 ```sh
@@ -87,7 +87,7 @@ sepal_length,sepal_width,petal_length,petal_width,species
 4.9,3,1.4,0.2,setosa
 4.7,3.2,1.3,0.2,setosa
 4.6,3.1,1.5,0.2,setosa
-❯ fill can you group by species and show avg for each class and each column
+❯ ask can you group by species and show avg for each class and each column
 To accomplish this, you can use the `awk` command with delimiter set to ',' to group by species and calculate the mean for each column. Here's the command you can use:
 ```awk -F ',' 'NR>1{sumLengths[$5]+=($1+$2+$3+$4); count[$5]+=1;}END{for(species in sumLengths){print species, sumLengths[species]/count[species]}}' iris.csv```
 This will output the average values for each species, which will include the mean of sepal_length, sepal_width, petal_length, and petal_width.
@@ -95,7 +95,7 @@ This will output the average values for each species, which will include the mea
 versicolor 14.292
 setosa 10.132
 virginica 17.14
-❯ fill but this doent show all column avg
+❯ ask but this doent show all column avg
 To print the average for each column in addition to the species column, you can modify the `awk` command to include additional arrays for each column's sum and count. Here is the updated command:
 ```awk -F ',' 'NR>1{sumLengths[$5]+=$1; sumWidths[$5]+=$2; sumPlength[$5]+=$3; sumPwidth[$5]+=$4; count[$5]+=1;}END{for(specLengths[species]/count[species], sumWidths[species]/count[species], sumPlength[species]/count[species], sumPwidth[species]/count[species]}}' iris.csv```
 This command will output the average values for each species for all four columns, i.e., sepal_length, sepal_width, petal_length, and petal_width.
@@ -107,7 +107,7 @@ awk: illegal statement at source line 1
 awk: illegal statement at source line 1
         extra }
         missing )
-❯ fill fix this
+❯ ask fix this
 I apologize for the mistake in my previous response. Here's the correct command that will output the average values for each species for all four columns (i.e., sepal_length, sepal_width, petal_length, and petal_width):
 ```awk -F ',' 'NR>1{sumLengths[$5]+=$1; sumWidths[$5]+=$2; sumPlength[$5]+=$3; sumPwidth[$5]+=$4; count[$5]+=1;} END{for(spec in sumLengths){print spec, sumLengths[spec]/count[spec], sumWidths[spec]/count[spec], sumPlength[spec]/count[spec], sumPwidth[spec]/count[spec]}}' iris.csv```
 This command will group the data by species and calculate the mean for each column, then print the results for all four columns. Let me know if you need further assistance!
