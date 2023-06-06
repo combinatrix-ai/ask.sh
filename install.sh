@@ -173,7 +173,7 @@ esac
 echo ""
 echo "Congratulations, installation is complete! 🎉"
 echo ""
-echo "**************** To fully enjoy the benefits of this application, there are just a couple more easy steps ****************"
+echo "To fully enjoy the benefits of this application, there are just a couple more easy steps"
 echo ""
 echo "1. Make sure to set your AI_SH_OPENAI_API_KEY environment variable with your OpenAI API key. If you haven't got one yet, no worries, you can grab it from https://platform.openai.com/account/api-keys. This is your magic key to unlock the power of AI! 🗝️"
 echo ""
