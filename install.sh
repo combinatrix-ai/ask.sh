@@ -113,7 +113,11 @@ if ! command -v tmux &> /dev/null; then
     echo "Tmux is not installed. ask.sh uses tmux to capture current terminal screen and send to API."
     echo "If you proceed without installation, you cannot have context-aware/multi-turn conversations with AI."
     echo "See https://github.com/tmux/tmux/wiki/Installing for installation instructions"
-    read -p "Do you want to proceed without tmux? (y/n)" -n 1 -r
+    if [ -n "$ZSH_VERSION" ]; then
+        read "STDIN?Do you want to proceed without tmux? (y/n): "
+    else
+        read -p "Do you want to proceed without tmux? (y/n): " STDIN
+    fi
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]
     then
