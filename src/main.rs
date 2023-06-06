@@ -12,10 +12,14 @@ use std::env::consts::{ARCH, OS};
 // args
 const ARG_DEBUG: &'static str = "--debug_ai_sh";
 const ARG_NO_PANE: &'static str = "--no_pane";
-const ARG_FILL: &'static str = "--fill";
+const ARG_NO_SUGGEST: &'static str = "--no_suggest";
+
+const ARG_STRINGS: &'static [&'static str] = &[ARG_DEBUG, ARG_NO_PANE, ARG_NO_SUGGEST];
+
 // env
 const ENV_DEBUG: &'static str = "AI_SH_DEBUG";
 const ENV_NO_PANE: &'static str = "AI_SH_NO_PANE";
+const ENV_NO_SUGGEST: &'static str = "AI_SH_NO_SUGGEST";
 const ENV_OPENAI_API_KEY: &'static str = "AI_SH_OPENAI_API_KEY";
 const ENV_OPENAI_MODEL: &'static str = "AI_SH_OPENAI_MODEL";
 
@@ -32,17 +36,9 @@ fn get_openai_model_name() -> String {
     }
 }
 
-fn get_debug_mode() -> bool {
+fn get_env_flag(key: &str) -> bool {
     dotenv().ok();
-    match env::var(ENV_DEBUG) {
-        Ok(val) => val.parse::<bool>().unwrap_or(false),
-        Err(_e) => false,
-    }
-}
-
-fn get_ai_sh_no_pane() -> bool {
-    dotenv().ok();
-    match env::var(ENV_NO_PANE) {
+    match env::var(key) {
         Ok(val) => val.parse::<bool>().unwrap_or(false),
         Err(_e) => false,
     }
@@ -140,21 +136,6 @@ fn post_process(text: &str) -> Vec<String> {
                 .to_owned(),
         );
     });
-    // extract all commands enclosed in ` ` if no commands are found in ``` ```
-    if commands.len() == 0 {
-        let re = Regex::new(r#"`(.+?)`"#).unwrap();
-        re.captures_iter(&text.replace("\n", ";")).for_each(|cap| {
-            commands.push(
-                cap[1]
-                    .to_string()
-                    .replace("\n", " ")
-                    .trim_start_matches(";")
-                    .trim_end_matches(";")
-                    .trim()
-                    .to_owned(),
-            );
-        });
-    }
     // deduplicate with keeping the order
     // count the number of occurences of each command
     let mut counts = std::collections::HashMap::new();
@@ -179,21 +160,41 @@ fn post_process(text: &str) -> Vec<String> {
 // ai Hey what's up?
 
 fn main() {
-    // if run with --debug_ai_sh, then set debug_mode to true
-    let debug_mode = if env::args().any(|arg| arg == ARG_DEBUG) {
-        true
+    // check input from users
+
+    // arg without the first executable name
+    let args: Vec<String> = env::args().skip(1).collect();
+    // check if args are all predefined args
+    let is_using_stdin = args.iter().all(|arg| ARG_STRINGS.contains(&arg.as_str()));
+
+    let user_input = if is_using_stdin {
+        io::stdin().lock().lines().next().unwrap().unwrap()
     } else {
-        false
+        args.join(" ")
     };
-    // if run with --no_pane or -n, then set not_send_pane to true
-    let no_pane_arg_var = if env::args().any(|arg| arg == ARG_NO_PANE) {
-        true
-    } else {
-        false
-    };
-    let no_pane_env_var = get_ai_sh_no_pane();
-    // if no_pane is defined by any of the two variables. Do not send pane.
-    let mut send_pane: bool = !no_pane_env_var && !no_pane_arg_var;
+
+    // filter out predefined args
+    let user_input_without_flags = user_input
+        .split_whitespace()
+        .filter(|arg| !ARG_STRINGS.contains(&arg))
+        .collect::<Vec<&str>>()
+        .join(" ");
+
+    // debug_mode is true if args contains --debug_ai_sh or stdin text contains "--debug_ai_sh" or env var AI_SH_DEBUG is defined
+    let debug_mode = env::args().any(|arg| arg == ARG_DEBUG)
+        || user_input.contains(ARG_DEBUG)
+        || get_env_flag(ENV_DEBUG);
+
+    // send_pane is false if args contains --no_pane or stdin text contains "--no_pane" or env var AI_SH_NO_PANE is defined
+    // send_pane is immutable in case tmux capture-pane -p fails
+    let mut send_pane = !env::args().any(|arg| arg == ARG_NO_PANE)
+        && !user_input.contains(ARG_NO_PANE)
+        && !get_env_flag(ENV_NO_PANE);
+
+    // no_suggest is true if args contains --no_suggest or stdin text contains "--no_suggest" or env var AI_SH_NO_SUGGEST is defined
+    let no_suggest = env::args().any(|arg| arg == ARG_NO_SUGGEST)
+        || user_input.contains(ARG_NO_SUGGEST)
+        || get_env_flag(ENV_NO_SUGGEST);
 
     // run tmux capture-pane -p before anything is printed.
     // if run with no_pane, pane_text is empty string.
@@ -207,7 +208,7 @@ fn main() {
             match env::var("TMUX") {
                 Ok(_value) => in_tmux = true,
                 Err(_e) => {
-                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ai.sh/blob/master/README.md#tmux for more information. If you no longer want to see this message, run ai.sh with --no_pane option or set AI_SH_NO_PANE=true. ***\n")
+                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ask.sh/blob/master/README.md#qa for more information. If you no longer want to see this message, run `ask` with --no_pane option or set AI_SH_NO_PANE=true. ***\n")
                 }
             }
             if in_tmux {
@@ -256,64 +257,21 @@ fn main() {
         shell: shell,
     };
 
-    let text: String;
-    // if ai is given with other arguments than --debug_ai_sh or --no_pane or --fill, then use that args
-    let mut stdin_mode = false;
-    if env::args()
-        .skip(1)
-        .any(|arg| arg != ARG_DEBUG && arg != ARG_NO_PANE && arg != ARG_FILL)
-    {
-        if debug_mode {
-            eprintln!(
-                "Some arguments are given. I send them to AI: {:?}",
-                env::args().skip(1)
-            );
-        }
-        text = env::args()
-            .skip(1)
-            .filter(|arg| arg != ARG_DEBUG && arg != ARG_NO_PANE && arg != ARG_FILL)
-            .collect::<Vec<String>>()
-            .join(" ");
-    } else {
-        // read from stdin
-        text = io::stdin().lock().lines().next().unwrap().unwrap();
-        stdin_mode = true;
-        // TODO: if stdin is empty, timeout and exit
-    }
-
-    if debug_mode {
-        eprintln!("stdin_mode: {}", stdin_mode);
-        eprintln!("text: {}", text);
-    }
-
-    // if false, read global mode
-    let debug_mode = debug_mode || get_debug_mode();
-
-    if debug_mode {
-        eprintln!("debug_mode: {}", debug_mode);
-    }
-
-    // if stdin_mode and run with --fill, then set fill_mode to true
-    let fill_mode = if stdin_mode && env::args().any(|arg| arg == ARG_FILL) {
-        true
-    } else {
-        false
-    };
-    if debug_mode {
-        eprintln!("fill_mode: {}", fill_mode);
-    }
-
-    if debug_mode {
-        eprintln!("pane_text: {}", pane_text);
-    }
-
     // disable send_pane if pane_text is not empty
     if pane_text == "" && send_pane == true {
         if debug_mode {
             eprintln!("pane_text is empty, so I set no_pane to true");
         }
         send_pane = false;
-    } else {
+    }
+    if debug_mode {
+        eprintln!("args: {}", args.join(" "));
+        eprintln!("is_using_stdin: {}", is_using_stdin);
+        eprintln!("user_input: {}", user_input);
+        eprintln!("user_input_without_flags: {}", user_input_without_flags);
+        eprintln!("debug_mode: {}", debug_mode);
+        eprintln!("no_suggest: {}", no_suggest);
+        eprintln!("pane_text: {}", pane_text);
     }
 
     let api_key = match get_openai_api_key() {
@@ -330,39 +288,21 @@ fn main() {
     let templates = prompts::get_template();
     let mut vars = std::collections::HashMap::new();
     vars.insert("pane_text".to_owned(), pane_text.to_owned());
-    vars.insert("user_input".to_owned(), text.to_owned());
+    vars.insert("user_input".to_owned(), user_input_without_flags.to_owned());
     vars.insert("user_os".to_owned(), user_info.os.to_owned());
     vars.insert("user_arch".to_owned(), user_info.arch.to_owned());
     vars.insert("user_shell".to_owned(), user_info.shell.to_owned());
-    let system_message = if fill_mode {
-        if send_pane {
-            // templates.render("fill_system_with_pane", &vars).unwrap()
-            templates.render("tell_system_with_pane", &vars).unwrap()
-        } else {
-            // templates.render("fill_system_without_pane", &vars).unwrap()
-            templates.render("tell_system_without_pane", &vars).unwrap()
-        }
+    let system_message = if send_pane {
+        templates.render("tell_system_with_pane", &vars).unwrap()
     } else {
-        if send_pane {
-            templates.render("tell_system_with_pane", &vars).unwrap()
-        } else {
-            templates.render("tell_system_without_pane", &vars).unwrap()
-        }
+        templates.render("tell_system_without_pane", &vars).unwrap()
     };
-    let user_input = if fill_mode {
-        if send_pane {
-            // templates.render("fill_user_with_pane", &vars).unwrap()
-            templates.render("tell_user_with_pane", &vars).unwrap()
-        } else {
-            // templates.render("fill_user_without_pane", &vars).unwrap()
-            templates.render("tell_user_without_pane", &vars).unwrap()
-        }
+    let user_input = if send_pane {
+        // templates.render("fill_user_with_pane", &vars).unwrap()
+        templates.render("tell_user_with_pane", &vars).unwrap()
     } else {
-        if send_pane {
-            templates.render("tell_user_with_pane", &vars).unwrap()
-        } else {
-            templates.render("tell_user_without_pane", &vars).unwrap()
-        }
+        // templates.render("fill_user_without_pane", &vars).unwrap()
+        templates.render("tell_user_without_pane", &vars).unwrap()
     };
 
     let model_name = get_openai_model_name();
@@ -376,10 +316,13 @@ fn main() {
     );
     let commands = post_process(&response);
 
-    // if fill_mode is true, then print the possible commands
-    if fill_mode {
+    // print suggested commands to stdout to further process
+    if !no_suggest {
         for command in commands {
             println!("{}", command);
         }
     }
 }
+
+// set output to ASK_SH_OUTPUT
+//
