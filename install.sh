@@ -114,9 +114,9 @@ if ! command -v tmux &> /dev/null; then
     echo "If you proceed without installation, you cannot have context-aware/multi-turn conversations with AI."
     echo "See https://github.com/tmux/tmux/wiki/Installing for installation instructions"
     if [ -n "$ZSH_VERSION" ]; then
-        read "STDIN?Do you want to proceed without tmux? (y/n): "
+        read "REPLY?Do you want to proceed without tmux? (y/n): "
     else
-        read -p "Do you want to proceed without tmux? (y/n): " STDIN
+        read -p "Do you want to proceed without tmux? (y/n): " REPLY
     fi
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]
