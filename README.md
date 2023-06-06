@@ -1,8 +1,12 @@
-# ai.sh: The Future of Terminal Interfacing 🚀
+# ask.sh: The Future of Terminal Interfacing 🚀
+
+`ask.sh`: chat with AI in your terminal.
+
+![example](https://github.com/hmirin/ai.sh/assets/1284876/8f920268-3a87-4d05-8499-9171df7905bc)
 
 (This section is entirely written by ChatGPT.)
 
-Welcome to a revolutionary way of interacting with your terminal - meet `ai.sh`. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you with an interactive, context-aware dialogue right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command-line productivity.
+Welcome to a revolutionary way of interacting with your terminal - meet `ask.sh`. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you with an interactive, context-aware dialogue right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command-line productivity.
 
 ai.sh is your coding companion that offers AI insights at your command, simplifying your coding journey. Welcome to the future of coding!
 
@@ -19,10 +23,13 @@ Download iris dataset, do some analysis, all by shell commands without leaving t
 
 You might be interested in [other examples](examples.md)
 
-# Commands
+# Quick Start
 
-- `ask`: Query the AI for anything right from your terminal
-- `fill`: Let the AI suggest commands, which you can directly input to the shell
+```
+curl -sSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh | sh
+```
+
+Then, follow the instructions. See [Setup](#setup) for manual installation.
 
 # Key Features
 
@@ -103,12 +110,12 @@ When you run init` with the `--reinitialize` or `-o` option, Git will re-run the
 
 ## Let the AI Write to Your Terminal Directly!
 
-`fill` command let you type the command AI suggests directly to the shell.
+`ask` command let you type the command AI suggests directly to the shell.
 
 Ask AI to make command like this:
 
 ````
-❯ fill allocate 5GB file here
+❯ ask allocate 5GB file here
 ````
 
 The AI responds with some suggestions of the command:
@@ -133,10 +140,10 @@ fallocate -l 5G -z filename
 This will create a file of size 5GB with all bits set to 0.
 ````
 
-Then, you get overlay selector (peco) to select the best command.
+If AI suggested commands to execute, you get an overlay selector (peco) to select the best command.
 
 ```
-AI suggested commands (Enter to use / Ctrl+C to exit):       
+AI suggested commands (Enter to use / Ctrl+C to exit):
 fallocate -l 5G filename
 fallocate -l 5G -z filename
 ```
@@ -188,49 +195,71 @@ See [examples](https://github.com/hmirin/ai.sh/blob/main/examples.md)!
 
 ## Prerequisites
 
-If you just want `ask` command:
 - rust
+- `peco`: The `ask` command uses peco to let you select the command to execute from the AI suggested commands.
 
-If you also want `fill` command:
-- `peco`: The `fill` command uses peco to let you select the command to execute from the AI suggested commands.
-
-If you want `fill` command to work more nicely:
-- `tmux`: If you run ai.sh in tmux, you can send the current terminal to the AI for context-aware input.
-- `zsh`: If you run ai.sh in zsh (not Bash), you can fill the next command directly. No copy-paste is required.
+Optional, but highly reccomended if you want `ask` command to work more nicely:
+- `tmux`: If you run `ask` command in tmux, you can send the current terminal to the AI for context-aware input.
+- `zsh`: If you run `ask` command in zsh (not Bash), you can let AI write the next command directly to your terminal. No copy-paste is required.
 
 ## Installation
 
-- Install using cargo: `cargo install ai-sh`
-- Set `AI_SH_OPENAI_API_KEY` in your shell. Example: `export AI_SH_OPENAI_API_KEY=xxxx`
-- If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `AI_SH_NO_PANE=true`
-  - If you don't set this variable, `ask` command will always recommend you to use tmux.
-- Test the command with `ask hey whats up`
+- In most cases, install script should work
+```
+curl -sSL https://raw.githubusercontent.com/hmirin/ai.sh/main/install.sh | bash
+```
+
+- If you want to install manually, follow the steps below: 
+
+1. Install crate using cargo: `cargo install ask-sh`
+2. Set `AI_SH_OPENAI_API_KEY` in your shell
+3. If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `AI_SH_NO_PANE=true`
+  - If you don't set this variable when you query to `ask`, `ask` command will always recommend you to use tmux.
+4. Set up your shell environment (see [Shell setup](#shell-setup))
+  - Do not forget to source your shell config file or restart your shell.
+5. Test the command with `ask hey whats up`
+  - If AI responds with phrases like "As an AI assistant, I can't experience emotions brah brah brah", it means that the setup is done correctly.
 
 ### Shell setup
 
-If you just want `ask` command, you can safely skip here.
+Add the following to your shell config file.
 
 #### zsh (recommended)
 
-- If you use zsh, write this to the end of .zshrc
-  - `fill` command which lets you directly type the AI suggested commands.
-
 ```shell
-function fill() {
-    command=`echo "$@" | ask --fill 2> >(cat 1>&2) | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
-    print -z $command
+function ask() {
+    suggested_commands=`echo "$@" | ask-sh 2> >(cat 1>&2)`
+    if [ -z "$suggested_commands" ]; then
+        return
+    else
+        selected_command=`echo "$suggested_commands" | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
+        if [ -z "$selected_command" ]; then
+            return
+        else
+            print -z $selected_command
+        fi
+    fi
 }
 ```
 
 #### Bash and others
 
-- If you use Bash, you can't directly type the AI suggested commands because Bash doesn't have necessary APIs.
+- If you use Bash, you can't let the `ask` command to type the AI suggested commands because Bash doesn't have necessary APIs.
 - However, the code below insert the selected command to the end of history. Thus you can use the command if you push up key.
 
 ```shell
-fill() {
-  command=`echo "$@" | ask --fill 2> >(cat 1>&2) | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
-  history -s $command
+function ask() {
+    suggested_commands=`echo "$@" | ask-sh 2> >(cat 1>&2)`
+    if [ -z "$suggested_commands" ]; then
+        return
+    else
+        selected_command=`echo "$suggested_commands" | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
+        if [ -z "$selected_command" ]; then
+            return
+        else
+            history -s $selected_command
+        fi
+    fi
 }
 ```
 
@@ -257,7 +286,7 @@ This project is licensed under the terms of the MIT license.
 
 #### How ai.sh send the current output of terminal?
 
-- ai.sh use `tmux capture-pane -p` to get the current terminal status. Therefore, if you run `ask` and `fill` in tmux pane, text on the pane will be sent to the OpenAI.
+- ai.sh use `tmux capture-pane -p` to get the current terminal status. Therefore, if you run `ask` in tmux pane, text on the pane will be sent to the OpenAI.
 - This will give AI the context of your request and improve the result.
 - If you don't want to use this feature, set `AI_SH_NO_PANE=true` in your shell.
 
@@ -275,7 +304,7 @@ This project is licensed under the terms of the MIT license.
 #### Why Rust?
 
 - It's just because shell tools should have less dependencies!
-- There's no standard way in Python to make a command available to everywhere. 
+  - To my knowledge, there's no standard way in Python to make a command available to everywhere.
 
 # Contributing
 - Of course, we welcome contributions! Please feel free to open an issue or submit a pull request.
