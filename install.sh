@@ -146,10 +146,10 @@ if cargo install --list | grep -q ai-sh; then
     echo "Uninstalled ai-sh."
 fi
 
-# Install or upgrade asksh using cargo and if failed, exit
+# Install or upgrade ask.sh using cargo and if failed, exit
 echo "Installing/Updating ask.sh..."
 if ! cargo install ask-sh; then
-    echo "Failed to install asksh. Please check the error message above."
+    echo "Failed to install ask.sh. Please check the error message above."
     exit 1
 fi
 echo "ask.sh is installed/updated."
