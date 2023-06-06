@@ -137,7 +137,7 @@ fi
 
 # Install or upgrade asksh using cargo and if failed, exit
 echo "Installing/Updating ask.sh..."
-if ! cargo install --force --path .; then
+if ! cargo install ask-sh; then
     echo "Failed to install asksh. Please check the error message above."
     exit 1
 fi
