@@ -311,3 +311,8 @@ This project is licensed under the terms of the MIT license.
 
 # Contributing
 - Of course, we welcome contributions! Please feel free to open an issue or submit a pull request.
+
+# Acknowledgements
+
+A special thanks to @xarsh for their effort in debugging, testing, and providing valuable feedback, contributing significantly to the refinement of this project.
+Our sincere gratitude to @matsurih for their outstanding contribution to our work, marking the project's first-ever PR.
