@@ -14,11 +14,7 @@ const ARG_DEBUG: &'static str = "--debug_ai_sh";
 const ARG_NO_PANE: &'static str = "--no_pane";
 const ARG_NO_SUGGEST: &'static str = "--no_suggest";
 
-const ARG_STRINGS: &'static [&'static str] = &[
-    ARG_DEBUG,
-    ARG_NO_PANE,
-    ARG_NO_SUGGEST,
-];
+const ARG_STRINGS: &'static [&'static str] = &[ARG_DEBUG, ARG_NO_PANE, ARG_NO_SUGGEST];
 
 // env
 const ENV_DEBUG: &'static str = "AI_SH_DEBUG";
@@ -321,7 +317,7 @@ fn main() {
     let commands = post_process(&response);
 
     // print suggested commands to stdout to further process
-    if !no_suggest{
+    if !no_suggest {
         for command in commands {
             println!("{}", command);
         }
