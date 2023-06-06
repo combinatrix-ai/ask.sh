@@ -121,7 +121,6 @@ if ! command -v tmux &> /dev/null; then
         read -p "Do you want to proceed without tmux? (y/n): " REPLY
     fi
     echo ""
-    echo "User chose: $REPLY"
     if [[ ! $REPLY =~ ^[Yy]$ ]]
     then
         echo "Exiting..."

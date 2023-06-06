@@ -27,12 +27,12 @@ You might be interested in [other examples](examples.md)
 
 If you're on Bash:
 ```
-curl -sSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh | bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)"
 ```
 
 If you're on Zsh:
 ```
-curl -sSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh | zsh
+zsh -c "$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)"
 ```
 
 Then, follow the instructions. See [Setup](#setup) for manual installation.
