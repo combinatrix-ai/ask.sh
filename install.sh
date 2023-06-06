@@ -114,10 +114,8 @@ if ! command -v tmux &> /dev/null; then
     echo "If you proceed without installation, you cannot have context-aware/multi-turn conversations with AI."
     echo "See https://github.com/tmux/tmux/wiki/Installing for installation instructions"
     if [ -n "$ZSH_VERSION" ]; then
-        echo "You're using zsh"
         read "REPLY?Do you want to proceed without tmux? (y/n): "
     else
-        echo "You're using Bash"
         read -p "Do you want to proceed without tmux? (y/n): " REPLY
     fi
     echo ""
@@ -133,7 +131,12 @@ echo "Tmux is installed or user chose to proceed without it. Proceeding with ins
 if cargo install --list | grep -q ai-sh; then
     # asking to uninstall ai-sh
     echo "Thank you for installing ai.sh. ai.sh is now renamed and upgraded to ask.sh."
-    read -p "To continue, ai-sh must be uninstalled. Do you want to uninstall ai-sh? (y/n)" -n 1 -r
+    echo "To continue, ai-sh must be uninstalled."
+    if [ -n "$ZSH_VERSION" ]; then
+        read "REPLY?Do you want to uninstall ai-sh? (y/n): "
+    else
+        read -p "Do you want to uninstall ai-sh? (y/n): " REPLY
+    fi
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]
     then
