@@ -84,6 +84,7 @@ write_ask_to_rc_file() {
       write_function_zshrc "$RC_FILE"
       ;;
     esac
+    echo "ask function is added to $RC_FILE"
   else
     echo "ask function is already defined in $RC_FILE. Skipping adding function to rc file. Skipping adding function to rc file."
     echo "If you want to manually add the function, if you are using bash, add the following to ~/.bashrc:"
