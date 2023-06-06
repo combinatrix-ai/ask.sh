@@ -208,7 +208,7 @@ fn main() {
             match env::var("TMUX") {
                 Ok(_value) => in_tmux = true,
                 Err(_e) => {
-                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ai.sh/blob/master/README.md#tmux for more information. If you no longer want to see this message, run ai.sh with --no_pane option or set AI_SH_NO_PANE=true. ***\n")
+                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ask.sh/blob/master/README.md#qa for more information. If you no longer want to see this message, run `ask` with --no_pane option or set AI_SH_NO_PANE=true. ***\n")
                 }
             }
             if in_tmux {
