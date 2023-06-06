@@ -123,6 +123,7 @@ if ! command -v tmux &> /dev/null; then
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]
     then
+        echo "Exiting..."
         exit 1
     fi
 fi
