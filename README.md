@@ -35,8 +35,10 @@ Similar projects:
   - A pioneering work with great features! However, I find the API overly complex and I'm not a fan of the way it runs commands in REPL.
 
 # Demo
-Download iris dataset, do some analysis, all by shell commands without leaving the terminal. (Played in 3x. Using GPT-4)
-![Demo GIF](https://github.com/hmirin/ask.sh/assets/1284876/93f54d0f-3ae8-4178-8e8e-201da7314441)
+
+From downloading the Titanic dataset using the curl command to calculate the survival rate for all combinations of sex and room class using the `awk` command, without leaving the terminal. (Played in 2x. Using `gpt-3.5-turbo`)
+
+https://github.com/hmirin/ask.sh/assets/1284876/4311db79-c56e-46c9-9cfe-66fce8f800df
 
 You might be interested in [other examples](examples.md)
 
