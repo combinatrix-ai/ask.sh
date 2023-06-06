@@ -85,7 +85,7 @@ write_ask_to_rc_file() {
       ;;
     esac
   else
-    echo "ask function is already defined in $RC_FILE. Skipping adding function to rc file."
+    echo "ask function is already defined in $RC_FILE. Skipping adding function to rc file. Skipping adding function to rc file."
     echo "If you want to manually add the function, if you are using bash, add the following to ~/.bashrc:"
     echo_bash_function
     echo "If you are using zsh, add the following to ~/.zshrc:"
@@ -150,18 +150,18 @@ echo "ask.sh is installed/updated."
 case "$SHELL" in
 *'bash'*)
 if [ -f "$HOME/.bashrc" ]; then
-    echo "Checking .bashrc"
+    echo "You're using Bash. Checking .bashrc"
     write_ask_to_rc_file "$HOME/.bashrc"
 fi
 ;;
 *'zsh'*)
 if [ -f "$HOME/.zshrc" ]; then
-    echo "Checking .zshrc"
+    echo "You're using Zsh. Checking .zshrc"
     write_ask_to_rc_file "$HOME/.zshrc"
 fi
 ;;
 *)
-echo "It seems you're using the shell other than bash or zsh based on $SHELL environmental variable." 
+echo "It seems you're using the shell other than bash or zsh." 
 echo "Please manually add the ask function to your rc file."
 echo "If you are using bash (or bash like shell), add the following to ~/.bashrc:"
 echo_bash_function
@@ -173,7 +173,7 @@ esac
 echo ""
 echo "Congratulations, installation is complete! 🎉"
 echo ""
-echo **************** To fully enjoy the benefits of this application, there are just a couple more easy steps ****************"
+echo "**************** To fully enjoy the benefits of this application, there are just a couple more easy steps ****************"
 echo ""
 echo "1. Make sure to set your AI_SH_OPENAI_API_KEY environment variable with your OpenAI API key. If you haven't got one yet, no worries, you can grab it from https://platform.openai.com/account/api-keys. This is your magic key to unlock the power of AI! 🗝️"
 echo ""
