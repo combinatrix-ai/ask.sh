@@ -204,7 +204,7 @@ See [examples](https://github.com/hmirin/ask.sh/blob/main/examples.md)!
 - rust
 - `peco`: The `ask` command uses peco to let you select the command to execute from the AI suggested commands.
 
-Optional, but highly reccomended if you want `ask` command to work more nicely:
+Optional, but highly recommended if you want `ask` command to work more nicely:
 - `tmux`: If you run `ask` command in tmux, you can send the current terminal to the AI for context-aware input.
 - `zsh`: If you run `ask` command in zsh (not Bash), you can let AI write the next command directly to your terminal. No copy-paste is required.
 
@@ -224,7 +224,7 @@ curl -sSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh | bash
 4. Set up your shell environment (see [Shell setup](#shell-setup))
   - Do not forget to source your shell config file or restart your shell.
 5. Test the command with `ask hey whats up`
-  - If AI responds with phrases like "As an AI assistant, I can't experience emotions brah brah brah", it means that the setup is done correctly.
+  - If AI responds with phrases like "As an AI assistant, I can't experience emotions blah blah blah", it means that the setup is done correctly.
 
 ### Shell setup
 
