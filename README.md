@@ -2,7 +2,7 @@
 
 `ask.sh`: chat with AI in your terminal.
 
-![example](https://github.com/hmirin/ask.sh/assets/1284876/8f920268-3a87-4d05-8499-9171df7905bc)
+<img src="https://github.com/hmirin/ask.sh/assets/1284876/8f920268-3a87-4d05-8499-9171df7905bc"  width="1280" />
 
 (This section is entirely written by ChatGPT.)
 
@@ -16,6 +16,8 @@ ask.sh is your coding companion that offers AI insights at your command, simplif
   - [Multiturn Conversations with AI in Your Terminal](#multiturn-conversations-with-ai-in-your-terminal)
   - [Let the AI Write to Your Terminal Directly!](#let-the-ai-write-to-your-terminal-directly)
   - [OS / CPU arch / Shell Aware Conversation!](#os--cpu-arch--shell-aware-conversations)
+
+# 
 
 # Demo
 Download iris dataset, do some analysis, all by shell commands without leaving the terminal. (Played in 3x. Using GPT-4)
