@@ -215,8 +215,8 @@ Optional, but highly recommended if you want `ask` command to work more nicely:
 - If you want to install manually, follow the steps below:
 
 1. Install crate using cargo: `cargo install ask-sh`
-2. Set `AI_SH_OPENAI_API_KEY` in your shell
-3. If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `AI_SH_NO_PANE=true`
+2. Set `ASK_SH_OPENAI_API_KEY` in your shell
+3. If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `ASK_SH_NO_PANE=true`
   - If you don't set this variable when you query to `ask`, `ask` command will always recommend you to use tmux.
 4. Set up your shell environment (see [Shell setup](#shell-setup))
   - Do not forget to source your shell config file or restart your shell.
@@ -291,16 +291,16 @@ This project is licensed under the terms of the MIT license.
 
 - ask.sh use `tmux capture-pane -p` to get the current terminal status. Therefore, if you run `ask` in tmux pane, text on the pane will be sent to the OpenAI.
 - This will give AI the context of your request and improve the result.
-- If you don't want to use this feature, set `AI_SH_NO_PANE=true` in your shell.
+- If you don't want to use this feature, set `ASK_SH_NO_PANE=true` in your shell.
 
 #### Privacy concerns?
 
 - As of 5th July 2023, OpenAI [states](https://openai.com/policies/api-data-usage-policies) that they will not use data submitted by customers via their API to train or improve their models, unless you explicitly opt-in to do so.
-- And of course, you can use ask.sh without sending the current terminal output to the OpenAI server. Just set `AI_SH_NO_PANE=true` in your shell.
+- And of course, you can use ask.sh without sending the current terminal output to the OpenAI server. Just set `ASK_SH_NO_PANE=true` in your shell.
 
 #### Can I use GPT-4?
 
-- Yes! You can use GPT-4 by setting the environmanet_variable `AI_SH_OPENAI_MODEL=gpt-4`.
+- Yes! You can use GPT-4 by setting the environmanet_variable `ASK_SH_OPENAI_MODEL=gpt-4`.
   - This environment variable is just passed to OpenAI API. So you can use whatever model OpenAI serves.
 - Currently, default model is set to `gpt-3.5-turbo`.
 

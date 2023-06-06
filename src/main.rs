@@ -10,18 +10,18 @@ use serde::Serialize;
 use std::env::consts::{ARCH, OS};
 
 // args
-const ARG_DEBUG: &'static str = "--debug_ai_sh";
+const ARG_DEBUG: &'static str = "--debug_ASK_SH";
 const ARG_NO_PANE: &'static str = "--no_pane";
 const ARG_NO_SUGGEST: &'static str = "--no_suggest";
 
 const ARG_STRINGS: &'static [&'static str] = &[ARG_DEBUG, ARG_NO_PANE, ARG_NO_SUGGEST];
 
 // env
-const ENV_DEBUG: &'static str = "AI_SH_DEBUG";
-const ENV_NO_PANE: &'static str = "AI_SH_NO_PANE";
-const ENV_NO_SUGGEST: &'static str = "AI_SH_NO_SUGGEST";
-const ENV_OPENAI_API_KEY: &'static str = "AI_SH_OPENAI_API_KEY";
-const ENV_OPENAI_MODEL: &'static str = "AI_SH_OPENAI_MODEL";
+const ENV_DEBUG: &'static str = "ASK_SH_DEBUG";
+const ENV_NO_PANE: &'static str = "ASK_SH_NO_PANE";
+const ENV_NO_SUGGEST: &'static str = "ASK_SH_NO_SUGGEST";
+const ENV_OPENAI_API_KEY: &'static str = "ASK_SH_OPENAI_API_KEY";
+const ENV_OPENAI_MODEL: &'static str = "ASK_SH_OPENAI_MODEL";
 
 fn get_openai_api_key() -> Option<String> {
     dotenv().ok();
@@ -180,18 +180,18 @@ fn main() {
         .collect::<Vec<&str>>()
         .join(" ");
 
-    // debug_mode is true if args contains --debug_ai_sh or stdin text contains "--debug_ai_sh" or env var AI_SH_DEBUG is defined
+    // debug_mode is true if args contains --debug_ASK_SH or stdin text contains "--debug_ASK_SH" or env var ASK_SH_DEBUG is defined
     let debug_mode = env::args().any(|arg| arg == ARG_DEBUG)
         || user_input.contains(ARG_DEBUG)
         || get_env_flag(ENV_DEBUG);
 
-    // send_pane is false if args contains --no_pane or stdin text contains "--no_pane" or env var AI_SH_NO_PANE is defined
+    // send_pane is false if args contains --no_pane or stdin text contains "--no_pane" or env var ASK_SH_NO_PANE is defined
     // send_pane is immutable in case tmux capture-pane -p fails
     let mut send_pane = !env::args().any(|arg| arg == ARG_NO_PANE)
         && !user_input.contains(ARG_NO_PANE)
         && !get_env_flag(ENV_NO_PANE);
 
-    // no_suggest is true if args contains --no_suggest or stdin text contains "--no_suggest" or env var AI_SH_NO_SUGGEST is defined
+    // no_suggest is true if args contains --no_suggest or stdin text contains "--no_suggest" or env var ASK_SH_NO_SUGGEST is defined
     let no_suggest = env::args().any(|arg| arg == ARG_NO_SUGGEST)
         || user_input.contains(ARG_NO_SUGGEST)
         || get_env_flag(ENV_NO_SUGGEST);
@@ -208,7 +208,7 @@ fn main() {
             match env::var("TMUX") {
                 Ok(_value) => in_tmux = true,
                 Err(_e) => {
-                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ask.sh/blob/master/README.md#qa for more information. If you no longer want to see this message, run `ask` with --no_pane option or set AI_SH_NO_PANE=true. ***\n")
+                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ask.sh/blob/master/README.md#qa for more information. If you no longer want to see this message, run `ask` with --no_pane option or set ASK_SH_NO_PANE=true. ***\n")
                 }
             }
             if in_tmux {
