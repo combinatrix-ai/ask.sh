@@ -114,13 +114,14 @@ if ! command -v tmux &> /dev/null; then
     echo "If you proceed without installation, you cannot have context-aware/multi-turn conversations with AI."
     echo "See https://github.com/tmux/tmux/wiki/Installing for installation instructions"
     if [ -n "$ZSH_VERSION" ]; then
-        echo "You're using ZSH"
+        echo "You're using zsh"
         read "REPLY?Do you want to proceed without tmux? (y/n): "
     else
         echo "You're using Bash"
         read -p "Do you want to proceed without tmux? (y/n): " REPLY
     fi
     echo ""
+    echo "User chose: $REPLY"
     if [[ ! $REPLY =~ ^[Yy]$ ]]
     then
         echo "Exiting..."
