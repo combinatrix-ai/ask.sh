@@ -229,61 +229,20 @@ Optional, but highly recommended if you want `ask` command to work more nicely:
 
 ## Installation
 
-- In most cases, [install script](#quick-start) should work.
-  - If you find any problem, please file an issue!
-- If you want to install manually, follow the steps below:
-
-1. Install crate using cargo: `cargo install ask-sh`
-2. Set `ASK_SH_OPENAI_API_KEY` in your shell
-3. If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `ASK_SH_NO_PANE=true`
-  - If you don't set this variable when you query to `ask`, `ask` command will always recommend you to use tmux.
-4. Set up your shell environment (see [Shell setup](#shell-setup))
-  - Do not forget to source your shell config file or restart your shell.
-5. Test the command with `ask hey whats up`
-  - If AI responds with phrases like "As an AI assistant, I can't experience emotions blah blah blah", it means that the setup is done correctly.
-
-### Shell setup
-
-Add the following to your shell config file.
-
-#### zsh (recommended)
-
-```shell
-function ask() {
-    suggested_commands=`echo "$@" | ask-sh 2> >(cat 1>&2)`
-    if [ -z "$suggested_commands" ]; then
-        return
-    else
-        selected_command=`echo "$suggested_commands" | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
-        if [ -z "$selected_command" ]; then
-            return
-        else
-            print -z $selected_command
-        fi
-    fi
-}
-```
-
-#### Bash and others
-
-- If you use Bash, you can't let the `ask` command to type the AI suggested commands because Bash doesn't have necessary APIs.
-- However, the code below insert the selected command to the end of history. Thus you can use the command if you push up key.
-
-```shell
-function ask() {
-    suggested_commands=`echo "$@" | ask-sh 2> >(cat 1>&2)`
-    if [ -z "$suggested_commands" ]; then
-        return
-    else
-        selected_command=`echo "$suggested_commands" | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
-        if [ -z "$selected_command" ]; then
-            return
-        else
-            history -s $selected_command
-        fi
-    fi
-}
-```
+- If you use Bash or zsh, [install script](#quick-start) should work.
+    - If you find any problem, please file an issue!
+- If you want to install `ask.sh` manually, follow the steps below:
+    1. Install [prerequisites](#prerequisites)
+    2. Install `ask.sh` using cargo: `cargo install ask-sh`
+    3. Set `ASK_SH_OPENAI_API_KEY` in your shell
+        - You can get your API key from [OpenAI](https://platform.openai.com/account/api-keys).
+    4. If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `ASK_SH_NO_PANE=true`
+        - If you don't set this variable when you query to `ask`, `ask` command will always recommend you to use tmux.
+    5. Set up your shell environment
+        - Add `eval "$(ask-sh --init)"` to your rc file (e.g., `~/.bashrc`, `~/.zshrc`)
+        - Do not forget to source your shell config file or restart your shell.
+    6. Test the command with `ask hey whats up`
+        - If AI responds with phrases like "As an AI assistant, I can't experience emotions blah blah blah", it means that the setup is done correctly.
 
 # Extras!
 
