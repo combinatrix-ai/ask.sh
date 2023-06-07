@@ -13,9 +13,11 @@ use std::env::consts::{ARCH, OS};
 const ARG_DEBUG: &'static str = "--debug_ASK_SH";
 const ARG_NO_PANE: &'static str = "--no_pane";
 const ARG_NO_SUGGEST: &'static str = "--no_suggest";
-const ARG_INIT: &'static str = "--init";
 
 const ARG_STRINGS: &'static [&'static str] = &[ARG_DEBUG, ARG_NO_PANE, ARG_NO_SUGGEST];
+
+// special arg
+const ARG_INIT: &'static str = "--init";
 
 // env
 const ENV_DEBUG: &'static str = "ASK_SH_DEBUG";
