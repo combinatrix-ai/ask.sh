@@ -98,7 +98,7 @@ fi
 
 # Install or upgrade ask.sh using cargo and if failed, exit
 echo "** 🌎 Installing/Updating ask.sh... **"
-if ! cargo install --path . ; then # ask-sh; then
+if ! cargo install ask-sh ; then # ask-sh; then
     echo "💥 Failed to install ask.sh. Please check the error message above."
     exit 1
 fi
