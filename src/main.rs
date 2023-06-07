@@ -107,7 +107,16 @@ async fn chat(
     if *debug_mode {
         eprintln!("API Call:\n{}\n", serialized_payload);
     }
-    let gpt_stream = openai_stream.gpt_stream(&serialized_payload).await.unwrap();
+
+    // if API return is not what expected, show error message and exit
+    let gpt_stream = match openai_stream.gpt_stream(&serialized_payload).await {
+        Ok(val) => val,
+        Err(e) => {
+            eprintln!("Communication with OpenAI API failed: {}", e);
+            process::exit(1);
+        }
+    };
+
     let mut gpt_stream = Box::pin(gpt_stream);
 
     let mut n_char = 0;
@@ -267,8 +276,8 @@ fn main() {
     let shell = match env::var("SHELL") {
         Ok(val) => val,
         Err(_e) => {
-            eprintln!("SHELL environment variable cannot read.");
-            "".to_string()
+            eprintln!("** Note: SHELL environment variable cannot read. **");
+            "Unknown".to_string()
         }
     };
     // print user info
