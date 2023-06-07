@@ -46,15 +46,16 @@ You might be interested in [other examples](examples.md)
 
 If you're on Bash:
 ```
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)"
+bash -c "SHELL=bash $(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)"
 ```
 
 If you're on Zsh:
 ```
-zsh -c "$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)"
+zsh -c "SHELL=zsh $(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)"
 ```
 
-Then, follow the instructions. See [Setup](#setup) for manual installation.
+Then, follow the instructions shown by the installer. 
+See [Setup](#setup) for manual installation.
 
 # Key Features
 
