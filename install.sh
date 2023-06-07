@@ -139,6 +139,7 @@ fi
 
 # if INPUT_OPENAI_API_KEY is not empty write to RC_FILE
 if [ -n "$INPUT_OPENAI_API_KEY" ]; then
+    # shellcheck disable=SC2059
     printf "
 # This variable is automatically inserted by the installer of ask.sh
 export ASK_SH_OPENAI_API_KEY=$INPUT_OPENAI_API_KEY
@@ -158,6 +159,7 @@ if grep -q "$SHELL_SOURCE_LINE" "$RC_FILE"; then
 else
     echo "🔎 Necessary lines are not available in your $RC_FILE."
     echo "😆 Don't worry! I will write the necessary lines to $RC_FILE."
+    # shellcheck disable=SC2059
     printf "
 # This line is automatically inserted by the installer of ask.sh
 $SHELL_SOURCE_LINE
