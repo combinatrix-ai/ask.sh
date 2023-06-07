@@ -17,23 +17,6 @@ ask.sh is your coding companion that offers AI insights at your command, simplif
   - [Let the AI Write to Your Terminal Directly!](#let-the-ai-write-to-your-terminal-directly)
   - [OS / CPU arch / Shell Aware Conversation!](#os--cpu-arch--shell-aware-conversations)
 
-# Why Another Terminal AI Assistant?
-
-Sure, there are plenty of [great projects](https://github.com/sindresorhus/awesome-chatgpt#cli-tools) for terminal AI assistants already out there. But, in my experience, none of these tools completely meet the criteria I consider essential:
-
-- Simple API: Who wants to remember complex commands and options? Isn't that why we need AI in the first place?
-- Multi-turn capability: Most tools cater to single-turn queries because they lack memory, an important feature in my book.
-- Terminal Reading: Copying and pasting from terminal? No, thank you!
-- Direct Command Execution on zsh/bash: Running commands in a wrapped environment or REPLs isn't my cup of tea.
-
-This is why I created `ask.sh`.
-
-Similar projects:
-- [Github Copilot for CLI](https://githubnext.com/projects/copilot-cli)
-  - It's fantastic, but it's primarily focused on a single-turn conversation for command generation.
-- [ShellGPT](https://github.com/TheR1D/shell_gpt)
-  - A pioneering work with great features! However, I find the API overly complex and I'm not a fan of the way it runs commands in REPL.
-
 # Demo
 
 From downloading the Titanic dataset using the curl command to calculate the survival rate for all combinations of sex and room class using the `awk` command, without leaving the terminal. (Played in 2x. Using `gpt-3.5-turbo`)
@@ -265,6 +248,24 @@ This project is licensed under the terms of the MIT license.
 
 
 # Q&A
+
+#### Why Another Terminal AI Assistant?
+
+Sure, there are plenty of [great projects](https://github.com/sindresorhus/awesome-chatgpt#cli-tools) for terminal AI assistants already out there. But, in my experience, none of these tools completely meet the criteria I consider essential:
+
+- Simple API: Who wants to remember complex commands and options? Isn't that why we need AI in the first place?
+- Multi-turn capability: Most tools cater to single-turn queries because they lack memory, an important feature in my book.
+- Terminal Reading: Copying and pasting from terminal? No, thank you!
+- Direct Command Execution on zsh/bash: Running commands in a wrapped environment or REPLs isn't my cup of tea.
+
+This is why I created `ask.sh`.
+
+Similar projects:
+- [Github Copilot for CLI](https://githubnext.com/projects/copilot-cli)
+  - It's fantastic, but it's primarily focused on a single-turn conversation for command generation.
+- [ShellGPT](https://github.com/TheR1D/shell_gpt)
+  - A pioneering work with great features! However, I find the API overly complex and I'm not a fan of the way it runs commands in REPL.
+
 
 #### How ask.sh send the current output of terminal?
 
