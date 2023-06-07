@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-SHELL_SOURCE_LINE="eval \"\$(ask-sh --init)"
+SHELL_SOURCE_LINE="eval \"\$(ask-sh --init)\""
 
 if [ "$NO_ASK_SHELL_SETUP" = "1" ]; then
     echo "I will not automatically insert necessary shell function NO_ASK_SHELL_SETUP=1 is set"
@@ -65,7 +65,8 @@ if ! command -v tmux > /dev/null 2>&1; then
     echo "Tmux is not installed. ask.sh uses tmux to capture current terminal screen and send to API."
     echo "If you proceed without installation, you cannot have context-aware/multi-turn conversations with AI."
     echo "See https://github.com/tmux/tmux/wiki/Installing for installation instructions"
-    read -r "REPLY?Do you want to proceed without tmux? (y/n): "
+    printf "Do you want to proceed without tmux? (y/n): "
+    read -r REPLY
     echo ""
     # shellcheck disable=SC3010
     if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -83,7 +84,8 @@ if cargo install --list | grep -q ai-sh; then
     # asking to uninstall ai-sh
     echo "Thank you for installing ai.sh. ai.sh is now renamed and upgraded to ask.sh."
     echo "To continue, ai-sh must be uninstalled."
-    read -r "REPLY?Do you want to uninstall ai-sh? (y/n): "
+    printf "Do you want to uninstall ai-sh? (y/n): "
+    read -r REPLY
     echo ""
     # shellcheck disable=SC3010
     if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -118,7 +120,8 @@ if [ -z "$ASK_SH_OPENAI_API_KEY" ]; then
         # use read
         echo "🤖 OpenAI API key is not set. Please set it now. This will be written to $RC_FILE. If you do not want me to setup ASK_SH_OPENAI_API_KEY variable, exit now and run the installer again with NO_ASK_OPENAI_API_KEY=1."
         echo "You can obtain your API key from https://platform.openai.com/account/api-keys"
-        read -r "INPUT_OPENAI_API_KEY?Please enter your OpenAI API key: "
+        printf "Please enter your OpenAI API key: "
+        read -r INPUT_OPENAI_API_KEY
         echo ""
         # remove newline, spaces, and quotes
         INPUT_OPENAI_API_KEY=$(echo "$INPUT_OPENAI_API_KEY" | tr -d '\n' | tr -d ' ' | tr -d '"')
@@ -139,8 +142,10 @@ fi
 
 # if INPUT_OPENAI_API_KEY is not empty write to RC_FILE
 if [ -n "$INPUT_OPENAI_API_KEY" ]; then
-    # shellcheck disable=SC3037
-    echo -e "\n# This variable is automatically inserted by the installer of ask.sh\nexport ASK_SH_OPENAI_API_KEY=$INPUT_OPENAI_API_KEY" >> "$RC_FILE"
+    printf "
+# This variable is automatically inserted by the installer of ask.sh
+export ASK_SH_OPENAI_API_KEY=$INPUT_OPENAI_API_KEY
+" >> "$RC_FILE"
     echo "🎂 OpenAI API key is written to $RC_FILE"
 fi
 
@@ -156,8 +161,10 @@ if grep -q "$SHELL_SOURCE_LINE" "$RC_FILE"; then
 else
     echo "🔎 Necessary lines are not available in your $RC_FILE."
     echo "😆 Don't worry! I will write the necessary lines to $RC_FILE."
-    # shellcheck disable=SC3037
-    echo -e "\n# This line is automatically inserted by the installer of ask.sh\n$SHELL_SOURCE_LINE\n" >> "$RC_FILE"
+    printf "
+# This line is automatically inserted by the installer of ask.sh
+$SHELL_SOURCE_LINE
+" >> "$RC_FILE"
     echo "✨ Necessary lines are written to $RC_FILE"
     echo "If you don't like automatic writing to $RC_FILE, you can disable it by running the installer with NO_ASK_SHELL_SETUP=1 next time."
 fi
