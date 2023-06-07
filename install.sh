@@ -2,8 +2,9 @@
 
 LATEST_SHELL_FUNCTION_VERSION=v2
 UPDATE_SHELL_FUNCTION=1
-if [ -z "$DO_NOT_UPDATE_SHELL_FUNCTION" ]; then
+if [ -n "$DO_NOT_UPDATE_SHELL_FUNCTION" ]; then
     echo "Disabled shell function update with DO_NOT_UPDATE_SHELL_FUNCTION=1"
+    echo ""
     UPDATE_SHELL_FUNCTION=0
 fi
 
@@ -13,7 +14,7 @@ DEFAULT_SHELL=$(basename "$SHELL")
 # Check if ask function is defined in the current shell
 # Check the default shell and write to appropriate rc file
 if [ -z "$DEFAULT_SHELL" ]; then
-    echo "Could not automatically determine your shell based on \$SHELL environment variable."
+    echo "😭 Could not automatically determine your shell based on \$SHELL environment variable."
     echo "Please set the \$SHELL environment variable and run this script again."
     echo "zsh -c \"\$(SHELL=zsh curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
     echo "bash -c \"\$(SHELL=bash curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
@@ -28,13 +29,16 @@ else
     fi
 fi
 
-echo "Installing ask.sh to your $DEFAULT_SHELL."
+echo "** Installing ask.sh to your $DEFAULT_SHELL. **"
+echo ""
+
 # recommend bash users to use zsh
 if [ "$DEFAULT_SHELL" = "bash" ]; then
-    echo "We recommend you to use zsh instead of bash."
+    echo "** 😎 We recommend you to use zsh instead of bash. **"
     echo "zsh is a modern and powerful shell, and ask.sh works better with zsh."
     echo "Using zsh, you can use auto-typing of the AI suggested commands."
     echo "Nevertheless, let's proceed with installing ask.sh for bash."
+    echo ""
 fi
 
 # From now on, we assume that the default shell is either zsh or bash
@@ -117,26 +121,28 @@ echo_zsh_function() {
     echo "}"
 }
 
+echo "** 🍭 Checking prerequisites... **"
+
 # Check if cargo is installed
 if ! command -v cargo &> /dev/null; then
     echo "Cargo is not installed. See https://doc.rust-lang.org/cargo/getting-started/installation.html for installation instructions"
     exit 1
 fi
-echo "Cargo is installed. Proceeding with installation."
+echo "📦 Cargo is installed. Proceeding with installation."
 
 # Check if peco is installed
 if ! command -v peco &> /dev/null; then
     echo "Peco is not installed. See https://github.com/peco/peco#installation for installation instructions"
     exit 1
 fi
-echo "Peco is installed. Proceeding with installation."
+echo "🍬 Peco is installed. Proceeding with installation."
 
 # Check if tmux is installed
 if ! command -v tmux &> /dev/null; then
     echo "Tmux is not installed. ask.sh uses tmux to capture current terminal screen and send to API."
     echo "If you proceed without installation, you cannot have context-aware/multi-turn conversations with AI."
     echo "See https://github.com/tmux/tmux/wiki/Installing for installation instructions"
-    if [ "$DEFAULT_SHELL" == "zsh" ]
+    if [ "$DEFAULT_SHELL" == "zsh" ]; then
         read "REPLY?Do you want to proceed without tmux? (y/n): "
     else
         read -p "Do you want to proceed without tmux? (y/n): " REPLY
@@ -148,14 +154,16 @@ if ! command -v tmux &> /dev/null; then
         exit 1
     fi
 fi
-echo "Tmux is installed or user chose to proceed without it. Proceeding with installation."
+echo "🖼️ Tmux is installed or user chose to proceed without it. Proceeding with installation."
+echo "🤩 Prerequisites are satisfied!"
+echo ""
 
 # if ai-sh is installed by cargo, uninstall it
 if cargo install --list | grep -q ai-sh; then
     # asking to uninstall ai-sh
     echo "Thank you for installing ai.sh. ai.sh is now renamed and upgraded to ask.sh."
     echo "To continue, ai-sh must be uninstalled."
-    if [ "$DEFAULT_SHELL" == "zsh" ]
+    if [ "$DEFAULT_SHELL" == "zsh" ]; then
         read "REPLY?Do you want to uninstall ai-sh? (y/n): "
     else
         read -p "Do you want to uninstall ai-sh? (y/n): " REPLY
@@ -170,28 +178,30 @@ if cargo install --list | grep -q ai-sh; then
 fi
 
 # Install or upgrade ask.sh using cargo and if failed, exit
-echo "Installing/Updating ask.sh..."
+echo "** 🌎 Installing/Updating ask.sh... **"
 if ! cargo install ask-sh; then
-    echo "Failed to install ask.sh. Please check the error message above."
+    echo "💥 Failed to install ask.sh. Please check the error message above."
     exit 1
 fi
-echo "ask.sh is installed/updated."
+echo "✨ ask.sh is installed/updated."
+echo ""
 
 # Check the default shell and select appropriate rc file
-if [  "$DEFAULT_SHELL" == "zsh" ]; then
+if [ "$DEFAULT_SHELL" = "zsh" ]; then
     RC_FILE="$HOME/.zshrc"
 else
     RC_FILE="$HOME/.bashrc"
 fi
 
+echo "** 🌏 Checking OpenAI api_key... **"
+
 # Read ASK_SH_OPENAI_API_KEY from environment variable if not set, ask user to set it now
-INPUT_OPENAI_API_KEY = ""
 if [ -z "$ASK_SH_OPENAI_API_KEY" ]; then
     if [ -z "$NO_ASK_OPENAI_API_KEY" ]; then
         # use read
-        echo "OpenAI API key is not set. Please set it now. This will be written to $RC_FILE. If you want to set it later, exit now and run the installer again with NO_ASK_OPENAI_API_KEY=1."
+        echo "🤖 OpenAI API key is not set. Please set it now. This will be written to $RC_FILE. If you want to set it later, exit now and run the installer again with NO_ASK_OPENAI_API_KEY=1."
         echo "You can obtain your API key from https://platform.openai.com/account/api-keys"
-        if [ "$DEFAULT_SHELL" == "zsh" ]
+        if [ "$DEFAULT_SHELL" == "zsh" ]; then
             read "INPUT_OPENAI_API_KEY?Please enter your OpenAI API key: "
         else
             read -p "Please enter your OpenAI API key: " INPUT_OPENAI_API_KEY
@@ -206,65 +216,80 @@ if [ -z "$ASK_SH_OPENAI_API_KEY" ]; then
         fi
         # show user the input
         echo "Your OpenAI API key is set to $INPUT_OPENAI_API_KEY"
+        echo ""
     fi
+else
+    echo "🤖 OpenAI API key is already set!"
+    echo ""
 fi
 
+
 # if INPUT_OPENAI_API_KEY is not empty write to RC_FILE
-if [ INPUT_OPENAI_API_KEY != "" ]; then
-    echo "export ASK_SH_OPENAI_API_KEY=$INPUT_OPENAI_API_KEY" >> "$RC_FILE"
-    echo "OpenAI API key is written to $RC_FILE"
+if [ -n "$INPUT_OPENAI_API_KEY" ]; then
+    echo -e "\n# This variable is automatically inserted by the installer of ask.sh\nexport ASK_SH_OPENAI_API_KEY=$INPUT_OPENAI_API_KEY" >> "$RC_FILE"
+    echo "🎂 OpenAI API key is written to $RC_FILE"
 fi
 
 # check ask function should be updated or not
 # the output of this section is correct UPDATE_SHELL_FUNCTION value
 
-# check if ask function is defined in the current shell
-if ! command -v ask >/dev/null 2>&1 ; then
+echo "** 🌍 Checking shell setup... **"
+
+# check if ask function is written in RC_FILE
+if grep -q "ask()" "$RC_FILE"; then
     # ask function exists in the current shell
-    # if not UPDATE_SHELL_FUNCTION is already turned off, keep going
-    if [ -z "$UPDATE_SHELL_FUNCTION" ]; then
-        echo "`ask` is already available in your shell."
+    echo "🔎 \`ask\` function is already available in your $RC_FILE!"
+    echo "😆 Thank you for keep using ask.sh!"
+    # if not UPDATE_SHELL_FUNCTION is already 0, keep going
+    if [ "$UPDATE_SHELL_FUNCTION" -eq 1 ]; then
         # capture the current installation of ask.sh shell function version
         CURRENT_SHELL_FUNCTION_VERSION=$(grep -oP '(?<=# ask.sh shell function v)\d' "$RC_FILE")
         if [ -z "$CURRENT_SHELL_FUNCTION_VERSION" ]; then
-            echo "However, I could not find the version of the ask.sh shell function in $RC_FILE."
+            echo "😱 However, I could not find the version of the ask.sh shell function in $RC_FILE."
             echo "If you have manually installed ask.sh shell function, please delete the function and reload the shell and try again."
-            echo "If this is first time you install ask.sh, the other programs might using the name `ask`. Please rename them and try again."
+            echo "If this is first time you install ask.sh, the other programs might using the name \`ask\`. Please rename them and try again."
             echo "If you have manually installed ask.sh shell function, elsewhere than $RC_FILE, please manually update the shell function."
             echo "If you don't want to update the shell function automatically by this installer, please set environment variable DO_NOT_UPDATE_SHELL_FUNCTION=1 and run the installer again."
             exit 1
         fi
         # if the shell function version is same as the current version, do not update shell function
         if [ "$CURRENT_SHELL_FUNCTION_VERSION" = "$LATEST_SHELL_FUNCTION_VERSION" ]; then
-            echo "The shell function version is latest. Skipping updating shell function."
+            echo "👍 The shell function version is latest. Skipping updating shell function."
             UPDATE_SHELL_FUNCTION=0
         else
-            echo "The shell function version is outdated. Updating shell function."
+            echo "🫢 The shell function version is outdated."
+            echo "🙏 Sorry to bother you but I don't delete the old shell function automatically because it's scary!"
+            echo "Please delete the old shell function and reload the shell and run the installer again."
+            echo "If you don't want to check the shell function automatically by this installer, please set environment variable DO_NOT_UPDATE_SHELL_FUNCTION=1 and run the installer again."
+            exit 1
         fi
    fi
 fi
 
 # if UPDATE_SHELL_FUNCTION is still 1, update the shell function
-if [ "$UPDATE_SHELL_FUNCTION" = 1 ]; then
-    echo "Updating shell function..."
+if [ "$UPDATE_SHELL_FUNCTION" -eq 1 ]; then
+    echo "🐚 Updating shell function..."
     case "$SHELL" in
     *'bash'*)
     if [ -f "$HOME/.bashrc" ]; then
-        write_ask_to_rc_file "$HOME/.bashrc"
+        write_function_others "$HOME/.bashrc"
     fi
     ;;
     *'zsh'*)
     if [ -f "$HOME/.zshrc" ]; then
-        write_ask_to_rc_file "$HOME/.zshrc"
+        write_function_zshrc "$HOME/.zshrc"
     fi
-    ;;
-    ;;
     esac
+else
+    echo "🦪 Shell function is not modified!"
+fi
+
 
 echo ""
-echo "Congratulations, installation is complete! 🎉"
+echo "🎉 Congratulations, installation is complete! 🎉"
 echo ""
-echo "Don't forget to source ~$RC_FILE or reload shell!"
+echo "❗️❗️❗️ Don't forget to `source $RC_FILE` or reload shell! ❗️❗️❗️"
+echo ""
 echo "Once everything's set up, you can chat with your AI by using the ask command. Why not start with \`ask hello\`? It's a great way to introduce yourself. The AI is looking forward to meeting you! 🤖"
 echo "For more details and guidance, our helpful guide is ready for you at https://github.com/hmirin/ask.sh/blob/main/README.md#installation."
 echo ""
