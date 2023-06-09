@@ -10,7 +10,7 @@ use serde::Serialize;
 use std::env::consts::{ARCH, OS};
 
 // args
-const ARG_DEBUG: &'static str = "--debug_ASK_SH";
+const ARG_DEBUG: &'static str = "--debug_ask_sh";
 const ARG_NO_PANE: &'static str = "--no_pane";
 const ARG_NO_SUGGEST: &'static str = "--no_suggest";
 
@@ -244,7 +244,7 @@ fn main() {
             match env::var("TMUX") {
                 Ok(_value) => in_tmux = true,
                 Err(_e) => {
-                    eprintln!("*** Note: If you run this command in tmux, I can send the current session log to AI. See https://github.com/hmirin/ask.sh/blob/master/README.md#qa for more information. If you no longer want to see this message, run `ask` with --no_pane option or set ASK_SH_NO_PANE=true. ***\n")
+                    eprintln!("*** Note: Terminal output is not sent to AI. Run this command inside tmux to enable the feature. See https://github.com/hmirin/ask.sh/blob/master/README.md#qa for more information. If you no longer want to see this message, run `ask` with --no_pane option or set ASK_SH_NO_PANE=true. ***\n")
                 }
             }
             if in_tmux {
@@ -276,7 +276,7 @@ fn main() {
     let shell = match env::var("SHELL") {
         Ok(val) => val,
         Err(_e) => {
-            eprintln!("** Note: SHELL environment variable cannot read. **");
+            // disabled notice for user, most of the cases the shell is not relevant
             "Unknown".to_string()
         }
     };
@@ -359,6 +359,3 @@ fn main() {
         }
     }
 }
-
-// set output to ASK_SH_OUTPUT
-//
