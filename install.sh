@@ -38,7 +38,7 @@ if [ -z "$NO_ASK_SHELL_SETUP" ]; then
     echo "I will automatically insert necessary shell function to $RC_FILE"
 fi
 # ask user to continue with installation
-printf "OK? Enter to continue, Ctrl-C to exit: "
+printf "❓ Enter to continue, Ctrl-C to exit: "
 read -r REPLY
 echo ""
 
@@ -74,7 +74,7 @@ if ! command -v tmux >/dev/null 2>&1; then
     echo "Tmux is not installed. ask.sh uses tmux to capture current terminal screen and send to API."
     echo "If you proceed without installation, you cannot have context-aware/multi-turn conversations with AI."
     echo "See https://github.com/tmux/tmux/wiki/Installing for installation instructions"
-    printf "Do you want to proceed without tmux? (y/n): "
+    printf "❓ Do you want to proceed without tmux? (y/n): "
     read -r REPLY
     echo ""
     # shellcheck disable=SC3010
@@ -92,7 +92,7 @@ if cargo install --list | grep -q ai-sh; then
     # asking to uninstall ai-sh
     echo "Thank you for installing ai.sh. ai.sh is now renamed and upgraded to ask.sh."
     echo "To continue, ai-sh must be uninstalled."
-    printf "Do you want to uninstall ai-sh? (y/n): "
+    printf "❓ Do you want to uninstall ai-sh? (y/n): "
     read -r REPLY
     echo ""
     # shellcheck disable=SC3010
