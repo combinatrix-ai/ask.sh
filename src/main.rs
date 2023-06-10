@@ -176,12 +176,22 @@ ask() {{
     if [ -z "$suggested_commands" ]; then
         return
     else
-        selected_command=`echo "$suggested_commands" | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
-        if [ -z "$selected_command" ]; then
-            return
+        printf "\n"
+        printf "👋 Hey, AI has suggested some commands that can be typed into your terminal.\n"
+        printf "🔍 Press Enter to view and select the commands, or type any other key to exit:"
+        if [ -n "$ZSH_VERSION" ]; then # read a single char
+            read -r -k 1 REPLY # zsh
         else
-            if ! print -z $selected_command 2>/dev/null; then
-                history -s $selected_command
+            read -r -n 1 REPLY # bash
+        fi
+        REPLY="${{REPLY#"${{REPLY%%[![:space:]]*}}"}}"  # trim whitespaces
+        printf "\033[3A" # delete uninformative lines
+        if [ -z "$REPLY" ] ; then
+            selected_command=`echo "$suggested_commands" | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
+            if [ -n "$selected_command" ]; then
+                if ! print -z $selected_command 2>/dev/null; then
+                    history -s $selected_command
+                fi
             fi
         fi
     fi
