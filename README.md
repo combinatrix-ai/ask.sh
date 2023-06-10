@@ -2,7 +2,7 @@
 
 `ask.sh`: chat with AI in your terminal.
 
-<img src="https://github.com/hmirin/ask.sh/assets/1284876/8f920268-3a87-4d05-8499-9171df7905bc" style="max-width: 100%;" />
+<img src="https://github.com/hmirin/ask.sh/assets/1284876/60f4f432-0306-4284-a1ed-5bf87aba6b04" style="max-width: 100%;" />
 
 (This section is entirely written by ChatGPT.)
 
