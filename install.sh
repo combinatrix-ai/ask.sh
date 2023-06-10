@@ -9,7 +9,7 @@ if [ "$NO_ASK_SHELL_SETUP" = "1" ]; then
     echo ""
 fi
 
-echo "** 🎁 Installing ask.sh to your $DEFAULT_SHELL. **"
+echo "** 🎁 Installing ask.sh to your shell. **"
 
 # check current shell using variables.
 if [ -n "$BASH_VERSION" ]; then
