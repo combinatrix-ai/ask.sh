@@ -9,28 +9,37 @@ if [ "$NO_ASK_SHELL_SETUP" = "1" ]; then
     echo ""
 fi
 
-DEFAULT_SHELL=$(basename "$SHELL")
+echo "** 🎁 Installing ask.sh to your $DEFAULT_SHELL. **"
 
-# Fail if $SHELL is not set
-# Check if ask function is defined in the current shell
-# Check the default shell and write to appropriate rc file
-if [ -z "$DEFAULT_SHELL" ]; then
-    echo "😭 Could not automatically determine your shell based on \$SHELL environment variable."
-    echo "Please set the \$SHELL environment variable and run this script again."
-    echo "zsh -c \"\$(SHELL=zsh curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
-    echo "bash -c \"\$(SHELL=bash curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
-    echo "If you are using other than zsh or bash, follow the instructions on https://github.com/hmirin/ask.sh#installation"
-    exit 1
+# check current shell using variables.
+if [ -n "$BASH_VERSION" ]; then
+    echo "You're installing ask.sh in Bash."
+    DEFAULT_SHELL="bash"
+elif [ -n "$ZSH_VERSION" ]; then
+    echo "You're installing ask.sh in zsh."
+    DEFAULT_SHELL="zsh"
 else
-    #  Fail if $SHELL is not zsh or bash
-    if [ "$DEFAULT_SHELL" != "zsh" ] && [ "$DEFAULT_SHELL" != "bash" ]; then
-        echo "It seems you're using a shell other than bash or zsh, according to \$SHELL environment variable."
-        echo "If you are using other than zsh or bash, follow the instructions on https://github.com/hmirin/ask.sh#installation"
-        exit 1
-    fi
+    echo "😭 Could not automatically determine your shell."
+    echo "If you're using zsh, or bash, please run the following command to install ask.sh:"
+    echo "zsh -c \"\$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
+    echo "bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
+    echo "If you are using a shell other than zsh or bash, this installer does not support it. However, ask.sh may work with manual install. Follow the instructions on https://github.com/hmirin/ask.sh#installation"
+    exit 1
 fi
 
-echo "** Installing ask.sh to your $DEFAULT_SHELL. **"
+# Check the default shell and select appropriate rc file
+if [ "$DEFAULT_SHELL" = "zsh" ]; then
+    RC_FILE="$HOME/.zshrc"
+else
+    RC_FILE="$HOME/.bashrc"
+fi
+
+if [ -z "$NO_ASK_SHELL_SETUP" ]; then
+    echo "I will automatically insert necessary shell function to $RC_FILE"
+fi
+# ask user to continue with installation
+printf "OK? Enter to continue, Ctrl-C to exit: "
+read -r REPLY
 echo ""
 
 # recommend bash users to use zsh
@@ -102,13 +111,6 @@ if ! cargo install ask-sh; then
 fi
 echo "✨ ask.sh is installed/updated."
 echo ""
-
-# Check the default shell and select appropriate rc file
-if [ "$DEFAULT_SHELL" = "zsh" ]; then
-    RC_FILE="$HOME/.zshrc"
-else
-    RC_FILE="$HOME/.bashrc"
-fi
 
 echo "** 🌏 Checking OpenAI api_key... **"
 
