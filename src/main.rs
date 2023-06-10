@@ -148,6 +148,19 @@ fn post_process(text: &str) -> Vec<String> {
                 .to_owned(),
         );
     });
+    // if command start from bash; or sh; remove it
+    commands = commands
+        .iter()
+        .map(|command| {
+            if command.starts_with("bash;") {
+                command.trim_start_matches("bash;").trim().to_owned()
+            } else if command.starts_with("sh;") {
+                command.trim_start_matches("sh;").trim().to_owned()
+            } else {
+                command.to_owned()
+            }
+        })
+        .collect();
     // deduplicate with keeping the order
     // count the number of occurences of each command
     let mut counts = std::collections::HashMap::new();
@@ -227,9 +240,8 @@ fn main() {
         .join(" ");
 
     // debug_mode is true if args contains --debug_ASK_SH or stdin text contains "--debug_ASK_SH" or env var ASK_SH_DEBUG is defined
-    let debug_mode = env::args().any(|arg| arg == ARG_DEBUG)
-        || user_input.contains(ARG_DEBUG)
-        || get_env_flag(ENV_DEBUG);
+    let debug_mode = env::args()
+        .any(|arg| arg == ARG_DEBUG || user_input.contains(ARG_DEBUG) || get_env_flag(ENV_DEBUG));
 
     // send_pane is false if args contains --no_pane or stdin text contains "--no_pane" or env var ASK_SH_NO_PANE is defined
     // send_pane is immutable in case tmux capture-pane -p fails
@@ -283,13 +295,20 @@ fn main() {
     }
 
     // get user's shell name
+    // when env::var("SHELL") is not set, use BASH_VERSION or ZSH_VERSION to guess the shell
     let shell = match env::var("SHELL") {
-        Ok(val) => val,
+        Ok(value) => value,
         Err(_e) => {
-            // disabled notice for user, most of the cases the shell is not relevant
-            "Unknown".to_string()
+            if env::var("BASH_VERSION").is_ok() {
+                "Bash".to_string()
+            } else if env::var("ZSH_VERSION").is_ok() {
+                "zsh".to_string()
+            } else {
+                "Unknown".to_string()
+            }
         }
     };
+
     // print user info
     if debug_mode {
         eprintln!("OS: {}", OS);
