@@ -177,8 +177,8 @@ ask() {{
         return
     else
         printf "\n"
-        printf "👋 Hey, AI has suggested some commands which can be typed into your terminal.\n"
-        printf "🔍 Enter to see and select the commands, type any other key to exit:"
+        printf "👋 Hey, AI has suggested some commands that can be typed into your terminal.\n"
+        printf "🔍 Press Enter to view and select the commands, or type any other key to exit:"
         if [ -n "$ZSH_VERSION" ]; then # read a single char
             read -r -k 1 REPLY # zsh
         else
