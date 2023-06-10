@@ -20,7 +20,7 @@ elif [ -n "$ZSH_VERSION" ]; then
     DEFAULT_SHELL="zsh"
 else
     echo "😭 Could not automatically determine your shell."
-    echo "If you're using zsh, or bash, please run the following command to install ask.sh:"
+    echo "If you're using zsh or bash, please run the following command to install ask.sh:"
     echo "zsh -c \"\$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
     echo "bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
     echo "If you are using a shell other than zsh or bash, this installer does not support it. However, ask.sh may work with manual install. Follow the instructions on https://github.com/hmirin/ask.sh#installation"
