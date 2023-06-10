@@ -149,7 +149,14 @@ fallocate -l 5G -z filename
 This will create a file of size 5GB with all bits set to 0.
 ````
 
-If AI suggested commands to execute, you get an overlay selector (peco) to select the best command.
+If the AI has suggested commands to execute, it will ask if you want to use those commands.
+
+```
+👋 Hey, AI has suggested some commands that can be typed into your terminal.
+🔍 Press Enter to view and select the commands, or type any other key to exit:
+```
+
+After you press Enter, an overlay selector (`peco`) will appear, allowing you to select the most suitable command.
 
 ```
 AI suggested commands (Enter to use / Ctrl+C to exit):
