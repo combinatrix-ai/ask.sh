@@ -227,9 +227,8 @@ fn main() {
         .join(" ");
 
     // debug_mode is true if args contains --debug_ASK_SH or stdin text contains "--debug_ASK_SH" or env var ASK_SH_DEBUG is defined
-    let debug_mode = env::args().any(|arg| arg == ARG_DEBUG)
-        || user_input.contains(ARG_DEBUG)
-        || get_env_flag(ENV_DEBUG);
+    let debug_mode = env::args()
+        .any(|arg| arg == ARG_DEBUG || user_input.contains(ARG_DEBUG) || get_env_flag(ENV_DEBUG));
 
     // send_pane is false if args contains --no_pane or stdin text contains "--no_pane" or env var ASK_SH_NO_PANE is defined
     // send_pane is immutable in case tmux capture-pane -p fails
@@ -296,7 +295,7 @@ fn main() {
             }
         }
     };
-    
+
     // print user info
     if debug_mode {
         eprintln!("OS: {}", OS);
