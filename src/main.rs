@@ -148,6 +148,19 @@ fn post_process(text: &str) -> Vec<String> {
                 .to_owned(),
         );
     });
+    // if command start from bash; or sh; remove it
+    commands = commands
+        .iter()
+        .map(|command| {
+            if command.starts_with("bash;") {
+                command.trim_start_matches("bash;").trim().to_owned()
+            } else if command.starts_with("sh;") {
+                command.trim_start_matches("sh;").trim().to_owned()
+            } else {
+                command.to_owned()
+            }
+        })
+        .collect();
     // deduplicate with keeping the order
     // count the number of occurences of each command
     let mut counts = std::collections::HashMap::new();
