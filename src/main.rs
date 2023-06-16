@@ -13,6 +13,7 @@ use std::env::consts::{ARCH, OS};
 const ARG_DEBUG: &'static str = "--debug_ask_sh";
 const ARG_NO_PANE: &'static str = "--no_pane";
 const ARG_NO_SUGGEST: &'static str = "--no_suggest";
+const ARG_VERSION: &'static str = "--version";
 
 const ARG_STRINGS: &'static [&'static str] = &[ARG_DEBUG, ARG_NO_PANE, ARG_NO_SUGGEST];
 
@@ -208,6 +209,16 @@ ask() {{
             fi
         fi
     fi
+    if [ -z "$ASK_SH_NO_UPDATE" ]; then
+        latest_version=`cargo search ask-sh | grep ask-sh | awk '{{print $3}}' | cut -d '"' -f2`
+        current_version=`ask-sh --version`
+        if [ "$latest_version" != "$current_version" ]; then
+            # clear line
+            printf "\033[2K\n"
+            printf "🎉 New version of ask-sh is available! (Current: $current_version vs New: $latest_version) Run 'cargo install ask-sh' to update. Set \$ASK_SH_NO_UPDATE=1 to suppress this notice.\n"
+            printf "\033[2K\n"
+        fi
+    fi
 }}
 "#
     );
@@ -217,6 +228,12 @@ fn main() {
     // if called with only --init, the command emits a shell script to be sourced
     if env::args().len() == 2 && env::args().nth(1).unwrap() == ARG_INIT {
         print_init_script();
+        return;
+    }
+
+    // if called with only --version, print version and exit
+    if env::args().len() == 2 && env::args().nth(1).unwrap() == ARG_VERSION {
+        println!("{}", env!("CARGO_PKG_VERSION"));
         return;
     }
     // check input from users
