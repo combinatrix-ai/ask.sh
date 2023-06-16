@@ -187,9 +187,7 @@ fn print_init_script() {
 # ask.sh shell function v2
 ask() {{
     suggested_commands=`echo "$@" | ask-sh 2> >(cat 1>&2)`
-    if [ -z "$suggested_commands" ]; then
-        :
-    else
+    if [ -n "$suggested_commands" ]; then
         printf "\n"
         printf "👋 Hey, AI has suggested some commands that can be typed into your terminal.\n"
         printf "🔍 Press Enter to view and select the commands, or type any other key to exit:"
