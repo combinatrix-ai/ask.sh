@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["hmirin <hmirin@example.com>"]
 description = "An AI command line assistant, which is context-aware and multi-turn capable."
 license = "MIT"
+repository = "https://github.com/hmirin/ask.sh/"
 
 [dependencies]
 "dotenv"="0.15.0"
