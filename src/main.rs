@@ -227,7 +227,7 @@ ask() {{
             REPLY="${{REPLY#"${{REPLY%%[![:space:]]*}}"}}"  # trim whitespaces
             if [ -z "$REPLY" ] ; then
                 cargo install --force ask-sh
-                printf "\nDone! Please restart your shell or source ~/.zshrc or ~/.bashrc. to use the new version.\n"
+                printf "\nDone! Please restart your shell or source ~/.zshrc or ~/.bashrc etc... to use the new version.\n"
             else
                 printf "\nOk, you can update ask-sh later by running 'cargo install --force ask-sh'.\n"
             fi
