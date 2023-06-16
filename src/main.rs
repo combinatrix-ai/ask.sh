@@ -188,7 +188,7 @@ fn print_init_script() {
 ask() {{
     suggested_commands=`echo "$@" | ask-sh 2> >(cat 1>&2)`
     if [ -z "$suggested_commands" ]; then
-        return
+        :
     else
         printf "\n"
         printf "👋 Hey, AI has suggested some commands that can be typed into your terminal.\n"
@@ -199,7 +199,9 @@ ask() {{
             read -r -n 1 REPLY # bash
         fi
         REPLY="${{REPLY#"${{REPLY%%[![:space:]]*}}"}}"  # trim whitespaces
-        printf "\033[3A" # delete uninformative lines
+        printf "\033[3A" # go back three lines
+        printf "\033[2K\n\033[2K\n\033[2K\n\033[2K\n" # delete uninformative lines
+        printf "\033[4A" # go back again
         if [ -z "$REPLY" ] ; then
             selected_command=`echo "$suggested_commands" | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
             if [ -n "$selected_command" ]; then
@@ -214,9 +216,21 @@ ask() {{
         current_version=`ask-sh --version`
         if [ "$latest_version" != "$current_version" ]; then
             # clear line
-            printf "\033[2K\n"
-            printf "🎉 New version of ask-sh is available! (Current: $current_version vs New: $latest_version) Run 'cargo install ask-sh' to update. Set \$ASK_SH_NO_UPDATE=1 to suppress this notice.\n"
-            printf "\033[2K\n"
+            printf "\n"
+            printf "🎉 New version of ask-sh is available! (Current: $current_version vs New: $latest_version) Set \$ASK_SH_NO_UPDATE=1 to suppress this notice.\n"
+            printf "🆙 Press Enter to run update now, or type any other key to exit:"
+            if [ -n "$ZSH_VERSION" ]; then # read a single char
+                read -r -k 1 REPLY # zsh
+            else
+                read -r -n 1 REPLY # bash
+            fi
+            REPLY="${{REPLY#"${{REPLY%%[![:space:]]*}}"}}"  # trim whitespaces
+            if [ -z "$REPLY" ] ; then
+                cargo install --force ask-sh
+                printf "\nDone! Please restart your shell or source ~/.zshrc or ~/.bashrc. to use the new version.\n"
+            else
+                printf "\nOk, you can update ask-sh later by running 'cargo install --force ask-sh'.\n"
+            fi
         fi
     fi
 }}
