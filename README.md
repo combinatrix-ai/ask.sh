@@ -5,7 +5,8 @@
     - `ask.sh` can *read from and write to your terminal*!
         - No need to copy and paste error texts to a browser window and then bring solutions back to the terminal!
         - It maintains some memory and can handle multi-turn conversations!
- 
+- `ask.sh` provides `ask` command to your terminal:
+
 <img src="https://github.com/hmirin/ask.sh/assets/1284876/60f4f432-0306-4284-a1ed-5bf87aba6b04" style="max-width: 100%;" />
 
 - Key Features
