@@ -1,14 +1,12 @@
-# ask.sh: The Future of Terminal Interfacing 🚀
+# ask.sh: AI terminal assistant that read from & write to your terminal
 
-`ask.sh`: chat with AI in your terminal.
-
+- `ask.sh` is an AI terminal assistant based on OpenAI APIs such as GPT-3.5/4!
+- What's unique?
+    - `ask.sh` can *read from and write to your terminal*!
+        - No need to copy and paste error texts to a browser window and then bring solutions back to the terminal!
+        - It maintains some memory and can handle multi-turn conversations!
+ 
 <img src="https://github.com/hmirin/ask.sh/assets/1284876/60f4f432-0306-4284-a1ed-5bf87aba6b04" style="max-width: 100%;" />
-
-(This section is entirely written by ChatGPT.)
-
-Welcome to a revolutionary way of interacting with your terminal - meet `ask.sh`. Developed using Rust, this tool leverages the power of OpenAI's language model, providing you with an interactive, context-aware dialogue right in your console. It's easy to use, intuitive, and designed to supercharge your terminal sessions and command-line productivity.
-
-ask.sh is your coding companion that offers AI insights at your command, simplifying your coding journey. Welcome to the future of coding!
 
 - Key Features
   - [Query the AI from Your Terminal](#query-the-ai-from-your-terminal)
