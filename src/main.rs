@@ -8,7 +8,6 @@ use regex::Regex;
 use std::env;
 use std::error::Error;
 use std::io::{self, BufRead};
-use std::io::{stdout, Write};
 use std::process;
 mod prompts;
 use serde::Serialize;
@@ -108,7 +107,6 @@ async fn chat(
 
     let mut stream = client.chat().create_stream(request).await?;
 
-    let mut lock = stdout().lock();
     let mut response_to_return = String::new();
     while let Some(result) = stream.next().await {
         match result {
@@ -116,15 +114,14 @@ async fn chat(
                 response.choices.iter().for_each(|chat_choice| {
                     if let Some(ref content) = chat_choice.delta.content {
                         response_to_return = response_to_return.clone() + content;
-                        write!(lock, "{}", content).unwrap();
+                        eprint!("{}", content);
                     }
                 });
             }
             Err(err) => {
-                writeln!(lock, "error: {err}").unwrap();
+                eprint!("{}", err);
             }
         }
-        stdout().flush()?;
     }
     Ok(response_to_return)
 }
@@ -403,6 +400,7 @@ fn main() {
         &system_message,
         &debug_mode,
     );
+
     let response = match response {
         Ok(val) => val,
         Err(e) => {
