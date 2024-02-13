@@ -1,9 +1,14 @@
+use async_openai::config::OpenAIConfig;
+use async_openai::types::ChatCompletionRequestUserMessageArgs;
+use async_openai::types::CreateChatCompletionRequestArgs;
+use async_openai::{types::ChatCompletionRequestSystemMessageArgs, Client};
 use dotenv::dotenv;
 use futures::stream::StreamExt;
-use openai_api_stream_rs::OpenAIStream;
 use regex::Regex;
 use std::env;
+use std::error::Error;
 use std::io::{self, BufRead};
+use std::io::{stdout, Write};
 use std::process;
 mod prompts;
 use serde::Serialize;
@@ -75,6 +80,7 @@ struct UserInfo {
 /// ```
 /// println!(chat("api-key", "gpt-3.5-turbo", "You're an AI assistant.", "Tell me how to unarchive tar.gz." ))
 /// ```
+/// Taken from https://github.com/64bit/async-openai/blob/main/examples/chat/src/main.rs under MIT License
 #[tokio::main]
 async fn chat(
     api_key: &str,
@@ -82,56 +88,45 @@ async fn chat(
     user_input: &str,
     system_message: &str,
     debug_mode: &bool,
-) -> String {
-    let openai_stream = OpenAIStream::new(api_key.to_string());
+) -> Result<String, Box<dyn Error>> {
+    let config = OpenAIConfig::new().with_api_key(api_key);
+    let client = Client::with_config(config);
 
-    // build json payload
-    let messages = vec![
-        Message {
-            role: "system".to_string(),
-            content: system_message.to_string(),
-        },
-        Message {
-            role: "user".to_string(),
-            content: user_input.to_string(),
-        },
-    ];
+    let request = CreateChatCompletionRequestArgs::default()
+        .model(model_name)
+        .messages([
+            ChatCompletionRequestSystemMessageArgs::default()
+                .content(system_message)
+                .build()?
+                .into(),
+            ChatCompletionRequestUserMessageArgs::default()
+                .content(user_input)
+                .build()?
+                .into(),
+        ])
+        .build()?;
 
-    let payload = Payload {
-        model: model_name.to_string(),
-        messages: messages,
-    };
+    let mut stream = client.chat().create_stream(request).await?;
 
-    let serialized_payload = serde_json::to_string(&payload).unwrap();
-
-    // print input
-    if *debug_mode {
-        eprintln!("API Call:\n{}\n", serialized_payload);
-    }
-
-    // if API return is not what expected, show error message and exit
-    let gpt_stream = match openai_stream.gpt_stream(&serialized_payload).await {
-        Ok(val) => val,
-        Err(e) => {
-            eprintln!("Communication with OpenAI API failed: {}", e);
-            process::exit(1);
-        }
-    };
-
-    let mut gpt_stream = Box::pin(gpt_stream);
-
-    let mut n_char = 0;
+    let mut lock = stdout().lock();
     let mut response_to_return = String::new();
-    while let Some(response) = gpt_stream.next().await {
-        // response is incremental, so we need to print only the new part
-        // print only after n_char to avoid printing already printed text
-        let response_to_show = &response[n_char..];
-        eprint!("{}", response_to_show);
-        n_char = response.len();
-        response_to_return = response.to_string();
+    while let Some(result) = stream.next().await {
+        match result {
+            Ok(response) => {
+                response.choices.iter().for_each(|chat_choice| {
+                    if let Some(ref content) = chat_choice.delta.content {
+                        response_to_return = response_to_return.clone() + content;
+                        write!(lock, "{}", content).unwrap();
+                    }
+                });
+            }
+            Err(err) => {
+                writeln!(lock, "error: {err}").unwrap();
+            }
+        }
+        stdout().flush()?;
     }
-    eprintln!();
-    return response_to_return;
+    Ok(response_to_return)
 }
 
 fn post_process(text: &str) -> Vec<String> {
@@ -408,6 +403,14 @@ fn main() {
         &system_message,
         &debug_mode,
     );
+    let response = match response {
+        Ok(val) => val,
+        Err(e) => {
+            eprintln!("Communication with OpenAI API failed: {}", e);
+            process::exit(1);
+        }
+    };
+
     let commands = post_process(&response);
 
     // print suggested commands to stdout to further process

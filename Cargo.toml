@@ -1,6 +1,6 @@
 [package]
 name = "ask-sh"
-version = "0.4.2"
+version = "0.4.3"
 edition = "2021"
 authors = ["hmirin <hmirin@example.com>"]
 description = "An AI command line assistant, which is context-aware and multi-turn capable."
@@ -10,12 +10,12 @@ repository = "https://github.com/hmirin/ask.sh/"
 [dependencies]
 "dotenv"="0.15.0"
 "regex"="1.8.3"
-"openai-api-stream-rs" = "0.1.0"
 "tokio" = { version = "1.12.0", features = ["full"] }
 "futures" = "0.3.19"
 tinytemplate = "1.2.1"
 serde_json = "1.0.96"
 serde = "1.0.163"
+async-openai = "0.18.3"
 
 [[bin]]
 name = "ask-sh"
