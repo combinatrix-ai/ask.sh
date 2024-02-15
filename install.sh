@@ -119,7 +119,8 @@ if [ -z "$ASK_SH_OPENAI_API_KEY" ]; then
     if [ -z "$NO_ASK_OPENAI_API_KEY" ]; then
         # use read
         echo "🤖 OpenAI API key is not set. Please set it now. This will be written to $RC_FILE. If you do not want me to setup ASK_SH_OPENAI_API_KEY variable, exit now and run the installer again with NO_ASK_OPENAI_API_KEY=1."
-        echo "You can obtain your API key from https://platform.openai.com/account/api-keys"
+        echo "You can obtain your API key from https://platform.openai.com/account/api-keys."
+        echo "Note: For those who want to restrict the API permissions, the minimum required permission for the API key is the `write` permission for `Model` capabilities."
         printf "Please enter your OpenAI API key: "
         read -r INPUT_OPENAI_API_KEY
         echo ""
