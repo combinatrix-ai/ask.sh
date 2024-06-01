@@ -13,22 +13,22 @@ mod prompts;
 use std::env::consts::{ARCH, OS};
 
 // args
-const ARG_DEBUG: &'static str = "--debug_ask_sh";
-const ARG_NO_PANE: &'static str = "--no_pane";
-const ARG_NO_SUGGEST: &'static str = "--no_suggest";
-const ARG_VERSION: &'static str = "--version";
+const ARG_DEBUG: &str = "--debug_ask_sh";
+const ARG_NO_PANE: &str = "--no_pane";
+const ARG_NO_SUGGEST: &str = "--no_suggest";
+const ARG_VERSION: &str = "--version";
 
-const ARG_STRINGS: &'static [&'static str] = &[ARG_DEBUG, ARG_NO_PANE, ARG_NO_SUGGEST];
+const ARG_STRINGS: &[&str] = &[ARG_DEBUG, ARG_NO_PANE, ARG_NO_SUGGEST];
 
 // special arg
-const ARG_INIT: &'static str = "--init";
+const ARG_INIT: &str = "--init";
 
 // env
-const ENV_DEBUG: &'static str = "ASK_SH_DEBUG";
-const ENV_NO_PANE: &'static str = "ASK_SH_NO_PANE";
-const ENV_NO_SUGGEST: &'static str = "ASK_SH_NO_SUGGEST";
-const ENV_OPENAI_API_KEY: &'static str = "ASK_SH_OPENAI_API_KEY";
-const ENV_OPENAI_MODEL: &'static str = "ASK_SH_OPENAI_MODEL";
+const ENV_DEBUG: &str = "ASK_SH_DEBUG";
+const ENV_NO_PANE: &str = "ASK_SH_NO_PANE";
+const ENV_NO_SUGGEST: &str = "ASK_SH_NO_SUGGEST";
+const ENV_OPENAI_API_KEY: &str = "ASK_SH_OPENAI_API_KEY";
+const ENV_OPENAI_MODEL: &str = "ASK_SH_OPENAI_MODEL";
 
 fn get_openai_api_key() -> Option<String> {
     dotenv().ok();
@@ -116,13 +116,13 @@ fn post_process(text: &str) -> Vec<String> {
     let mut commands = Vec::new();
     // extract all commands enclosed in ``` ```
     let re = Regex::new(r#"```(.+?)```"#).unwrap();
-    re.captures_iter(&text.replace("\n", ";")).for_each(|cap| {
+    re.captures_iter(&text.replace('\n', ";")).for_each(|cap| {
         commands.push(
             cap[1]
                 .to_string()
-                .replace("\n", " ")
-                .trim_start_matches(";")
-                .trim_end_matches(";")
+                .replace('\n', " ")
+                .trim_start_matches(';')
+                .trim_end_matches(';')
                 .trim()
                 .to_owned(),
         );
@@ -151,7 +151,7 @@ fn post_process(text: &str) -> Vec<String> {
     // TODO: not elegant
     let mut deduped_commands: Vec<String> = Vec::new();
     for command in &commands {
-        if deduped_commands.contains(&command) {
+        if deduped_commands.contains(command) {
         } else {
             deduped_commands.push(command.to_string());
         }
@@ -247,7 +247,7 @@ fn main() {
     // filter out predefined args
     let user_input_without_flags = user_input
         .split_whitespace()
-        .filter(|arg| !ARG_STRINGS.contains(&arg))
+        .filter(|arg| !ARG_STRINGS.contains(arg))
         .collect::<Vec<&str>>()
         .join(" ");
 
@@ -292,15 +292,14 @@ fn main() {
                         eprintln!("Somehow tmux capture-pane -p failed: {}", e);
                     }
                 }
-            } else {
-            }
+            } 
         }
     };
     // remove last empty lines from pane_text
     let mut pane_text = pane_text.trim_end().to_string();
     // remove last line of pane_text
-    if pane_text != "" {
-        let pane_text_lines: Vec<&str> = pane_text.split("\n").collect();
+    if !pane_text.is_empty() {
+        let pane_text_lines: Vec<&str> = pane_text.split('\n').collect();
         let mut pane_text_lines = pane_text_lines;
         pane_text_lines.pop();
         pane_text = pane_text_lines.join("\n");
@@ -331,11 +330,11 @@ fn main() {
     let user_info: UserInfo = UserInfo {
         arch: ARCH.to_string(),
         os: OS.to_string(),
-        shell: shell,
+        shell,
     };
 
     // disable send_pane if pane_text is not empty
-    if pane_text == "" && send_pane == true {
+    if pane_text.is_empty() && send_pane {
         if debug_mode {
             eprintln!("pane_text is empty, so I set no_pane to true");
         }
