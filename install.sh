@@ -57,7 +57,7 @@ echo "** 🍭 Checking prerequisites... **"
 
 # Check if cargo is installed
 if ! command -v cargo >/dev/null 2>&1; then
-    echo "Cargo is not installed. See https://doc.rust-lang.org/cargo/getting-started/installation.html for installation instructions"
+    echo "Cargo is not installed. See https://www.rust-lang.org/tools/install for installation instructions"
     exit 1
 fi
 echo "📦 Cargo is installed. Proceeding with installation."
@@ -83,7 +83,7 @@ if ! command -v tmux >/dev/null 2>&1; then
         exit 1
     fi
 fi
-echo "🖼️ Tmux is installed or user chose to proceed without it. Proceeding with installation."
+echo "👍 Tmux is installed or user chose to proceed without it. Proceeding with installation."
 echo "🤩 Prerequisites are satisfied!"
 echo ""
 
@@ -168,6 +168,14 @@ $SHELL_SOURCE_LINE
 " >>"$RC_FILE"
     echo "✨ Necessary lines are written to $RC_FILE"
     echo "If you don't like automatic writing to $RC_FILE, you can disable it by running the installer with NO_ASK_SHELL_SETUP=1 next time."
+fi
+
+# check if ask-sh is available in PATH
+if ! command -v ask-sh >/dev/null 2>&1; then
+echo "❌ Necessary rust package ask-sh is installed but cannot be accessed. Rust's bin path may not be added to your PATH."
+echo "👉 It's usually under ~/.cargo/bin/"
+echo "👀 Please add it to your PATH and restart your shell."
+exit 1
 fi
 
 echo ""
