@@ -1,24 +1,35 @@
-use async_openai::config::OpenAIConfig;
-use async_openai::types::ChatCompletionRequestUserMessageArgs;
-use async_openai::types::CreateChatCompletionRequestArgs;
-use async_openai::{types::ChatCompletionRequestSystemMessageArgs, Client};
 use dotenv::dotenv;
 use futures::stream::StreamExt;
 use regex::Regex;
-use std::env;
-use std::error::Error;
-use std::io::{self, BufRead};
-use std::process;
+use std::{
+    env::{
+        self,
+        consts::{ARCH, OS},
+    },
+    error::Error,
+    io::{self, BufRead},
+    process,
+};
+
+mod llm;
 mod prompts;
-use std::env::consts::{ARCH, OS};
+
+use llm::{create_provider, LLMConfig, LLMError, LLMProvider};
 
 // args
 const ARG_DEBUG: &str = "--debug_ask_sh";
 const ARG_NO_PANE: &str = "--no_pane";
 const ARG_NO_SUGGEST: &str = "--no_suggest";
 const ARG_VERSION: &str = "--version";
+const ARG_VERSION_SHORT: &str = "-v";
 
-const ARG_STRINGS: &[&str] = &[ARG_DEBUG, ARG_NO_PANE, ARG_NO_SUGGEST];
+const ARG_STRINGS: &[&str] = &[
+    ARG_DEBUG,
+    ARG_NO_PANE,
+    ARG_NO_SUGGEST,
+    ARG_VERSION,
+    ARG_VERSION_SHORT,
+];
 
 // special arg
 const ARG_INIT: &str = "--init";
@@ -27,19 +38,50 @@ const ARG_INIT: &str = "--init";
 const ENV_DEBUG: &str = "ASK_SH_DEBUG";
 const ENV_NO_PANE: &str = "ASK_SH_NO_PANE";
 const ENV_NO_SUGGEST: &str = "ASK_SH_NO_SUGGEST";
+
+// LLM provider settings
+const ENV_LLM_PROVIDER: &str = "ASK_SH_LLM_PROVIDER";
 const ENV_OPENAI_API_KEY: &str = "ASK_SH_OPENAI_API_KEY";
 const ENV_OPENAI_MODEL: &str = "ASK_SH_OPENAI_MODEL";
+const ENV_ANTHROPIC_API_KEY: &str = "ASK_SH_ANTHROPIC_API_KEY";
+const ENV_ANTHROPIC_MODEL: &str = "ASK_SH_ANTHROPIC_MODEL";
 
-fn get_openai_api_key() -> Option<String> {
+fn get_llm_config() -> Result<LLMConfig, LLMError> {
     dotenv().ok();
-    env::var(ENV_OPENAI_API_KEY).ok()
-}
 
-fn get_openai_model_name() -> String {
-    dotenv().ok();
-    match env::var(ENV_OPENAI_MODEL) {
-        Ok(val) => val,
-        Err(_e) => "gpt-3.5-turbo".to_string(),
+    // プロバイダーの選択（デフォルトはOpenAI）
+    let provider = env::var(ENV_LLM_PROVIDER).unwrap_or_else(|_| "openai".to_string());
+
+    match provider.as_str() {
+        "openai" => {
+            let api_key = env::var(ENV_OPENAI_API_KEY)
+                .map_err(|_| LLMError::ConfigError("OpenAI API key not found".to_string()))?;
+
+            let model = env::var(ENV_OPENAI_MODEL).unwrap_or_else(|_| "gpt-3.5-turbo".to_string());
+
+            Ok(LLMConfig {
+                provider,
+                api_key,
+                model,
+            })
+        }
+        "anthropic" => {
+            let api_key = env::var(ENV_ANTHROPIC_API_KEY)
+                .map_err(|_| LLMError::ConfigError("Anthropic API key not found".to_string()))?;
+
+            let model = env::var(ENV_ANTHROPIC_MODEL)
+                .unwrap_or_else(|_| "claude-3-5-sonnet-latest".to_string());
+
+            Ok(LLMConfig {
+                provider,
+                api_key,
+                model,
+            })
+        }
+        _ => Err(LLMError::ConfigError(format!(
+            "Unknown provider: {}",
+            provider
+        ))),
     }
 }
 
@@ -58,51 +100,26 @@ struct UserInfo {
     // TODO: add distro info if linux
 }
 
-/// Interactive chat with OpenAI API.
-///
-/// # Examples
-///
-/// ```
-/// println!(chat("api-key", "gpt-3.5-turbo", "You're an AI assistant.", "Tell me how to unarchive tar.gz." ))
-/// ```
-/// Taken from https://github.com/64bit/async-openai/blob/main/examples/chat/src/main.rs under MIT License
+/// LLMプロバイダーとのチャット
 #[tokio::main]
 async fn chat(
-    api_key: &str,
-    model_name: &str,
-    user_input: &str,
-    system_message: &str,
-    _debug_mode: &bool, // currently unused 
+    user_input: String,
+    system_message: String,
+    _debug_mode: &bool, // currently unused
 ) -> Result<String, Box<dyn Error>> {
-    let config = OpenAIConfig::new().with_api_key(api_key);
-    let client = Client::with_config(config);
+    let config = get_llm_config().map_err(|e| Box::new(e) as Box<dyn Error>)?;
+    let provider = create_provider(config).map_err(|e| Box::new(e) as Box<dyn Error>)?;
 
-    let request = CreateChatCompletionRequestArgs::default()
-        .model(model_name)
-        .messages([
-            ChatCompletionRequestSystemMessageArgs::default()
-                .content(system_message)
-                .build()?
-                .into(),
-            ChatCompletionRequestUserMessageArgs::default()
-                .content(user_input)
-                .build()?
-                .into(),
-        ])
-        .build()?;
-
-    let mut stream = client.chat().create_stream(request).await?;
+    let mut stream = LLMProvider::chat_stream(&provider, system_message, user_input)
+        .await
+        .map_err(|e| Box::new(e) as Box<dyn Error>)?;
 
     let mut response_to_return = String::new();
     while let Some(result) = stream.next().await {
         match result {
-            Ok(response) => {
-                response.choices.iter().for_each(|chat_choice| {
-                    if let Some(ref content) = chat_choice.delta.content {
-                        response_to_return = response_to_return.clone() + content;
-                        eprint!("{}", content);
-                    }
-                });
+            Ok(content) => {
+                response_to_return.push_str(&content);
+                eprint!("{}", content);
             }
             Err(err) => {
                 eprint!("{}", err);
@@ -195,7 +212,7 @@ ask() {{
     if [ -z "$ASK_SH_NO_UPDATE" ]; then
         latest_version=`cargo search ask-sh | grep ask-sh | awk '{{print $3}}' | cut -d '"' -f2`
         current_version=`ask-sh --version`
-        if [ "$latest_version" != "$current_version" ]; then
+        if [ "$(printf '%s\n' "$latest_version" "$current_version" | sort -rV | head -n1)" = "$latest_version" ] && [ "$latest_version" != "$current_version" ]; then
             # clear line
             printf "\n"
             printf "🎉 New version of ask-sh is available! (Current: $current_version vs New: $latest_version) Set \$ASK_SH_NO_UPDATE=1 to suppress this notice.\n"
@@ -226,13 +243,16 @@ fn main() {
         return;
     }
 
-    // if called with only --version, print version and exit
-    if env::args().len() == 2 && env::args().nth(1).unwrap() == ARG_VERSION {
-        println!("{}", env!("CARGO_PKG_VERSION"));
-        return;
+    // if called with only --version or -v, print version and exit
+    if env::args().len() == 2 {
+        let arg = env::args().nth(1).unwrap();
+        if arg == ARG_VERSION || arg == ARG_VERSION_SHORT {
+            println!("{}", env!("CARGO_PKG_VERSION"));
+            return;
+        }
     }
-    // check input from users
 
+    // check input from users
     // arg without the first executable name
     let args: Vec<String> = env::args().skip(1).collect();
     // check if args are all predefined args
@@ -292,7 +312,7 @@ fn main() {
                         eprintln!("Somehow tmux capture-pane -p failed: {}", e);
                     }
                 }
-            } 
+            }
         }
     };
     // remove last empty lines from pane_text
@@ -350,17 +370,6 @@ fn main() {
         eprintln!("pane_text: {}", pane_text);
     }
 
-    let api_key = match get_openai_api_key() {
-        Some(val) => val,
-        None => {
-            eprintln!(
-                "Please set your {} environment variable.",
-                ENV_OPENAI_API_KEY
-            );
-            process::exit(1);
-        }
-    };
-
     let templates = prompts::get_template();
     let mut vars = std::collections::HashMap::new();
     vars.insert("pane_text".to_owned(), pane_text.to_owned());
@@ -369,32 +378,24 @@ fn main() {
     vars.insert("user_arch".to_owned(), user_info.arch.to_owned());
     vars.insert("user_shell".to_owned(), user_info.shell.to_owned());
     let system_message = if send_pane {
-        templates.render("tell_system_with_pane", &vars).unwrap()
+        templates.render("SYSTEM_PROMPT_WITH_PANE", &vars).unwrap()
     } else {
-        templates.render("tell_system_without_pane", &vars).unwrap()
+        templates
+            .render("SYSTEM_PROMPT_WITHOUT_PANE", &vars)
+            .unwrap()
     };
     let user_input = if send_pane {
-        // templates.render("fill_user_with_pane", &vars).unwrap()
-        templates.render("tell_user_with_pane", &vars).unwrap()
+        templates.render("USER_PROMPT_WITH_PANE", &vars).unwrap()
     } else {
-        // templates.render("fill_user_without_pane", &vars).unwrap()
-        templates.render("tell_user_without_pane", &vars).unwrap()
+        templates.render("USER_PROMPT_WITHOUT_PANE", &vars).unwrap()
     };
 
-    let model_name = get_openai_model_name();
-
-    let response = chat(
-        &api_key,
-        &model_name,
-        &user_input,
-        &system_message,
-        &debug_mode,
-    );
+    let response = chat(user_input, system_message, &debug_mode);
 
     let response = match response {
         Ok(val) => val,
         Err(e) => {
-            eprintln!("Communication with OpenAI API failed: {}", e);
+            eprintln!("Communication with LLM provider failed: {}", e);
             process::exit(1);
         }
     };

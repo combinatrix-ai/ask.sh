@@ -1,6 +1,6 @@
 # ask.sh: AI terminal assistant that read from & write to your terminal
 
-- `ask.sh` is an AI terminal assistant based on OpenAI APIs such as GPT-3.5/4!
+- `ask.sh` is an AI terminal assistant that supports multiple LLM providers (OpenAI and Anthropic)!
 - What's unique?
     - `ask.sh` can *read from and write to your terminal*!
         - No need to copy and paste error texts to a browser window and then bring solutions back to the terminal!
@@ -224,11 +224,20 @@ Optional, but highly recommended if you want `ask` command to work more nicely:
 - If you want to install `ask.sh` manually, follow the steps below:
     1. Install [prerequisites](#prerequisites)
     2. Install `ask.sh` using cargo: `cargo install ask-sh`
-    3. Set `ASK_SH_OPENAI_API_KEY` in your shell
-        - You can get your API key from [OpenAI](https://platform.openai.com/account/api-keys).
-    4. If you don't want to use tmux or send your terminal outputs to the OpenAI server, set `ASK_SH_NO_PANE=true`
+    3. Choose and configure your LLM provider:
+       - For OpenAI (default):
+         - Set `ASK_SH_OPENAI_API_KEY` in your shell
+         - You can get your API key from [OpenAI](https://platform.openai.com/account/api-keys)
+       - For Anthropic:
+         - Set `ASK_SH_ANTHROPIC_API_KEY` in your shell
+         - You can get your API key from [Anthropic](https://console.anthropic.com/account/keys)
+         - Set `ASK_SH_LLM_PROVIDER=anthropic`
+    4. Optional: Configure model settings
+       - OpenAI: Set `ASK_SH_OPENAI_MODEL` (default: gpt-4o)
+       - Anthropic: Set `ASK_SH_ANTHROPIC_MODEL` (default: claude-3-opus-20240229)
+    5. If you don't want to use tmux or send your terminal outputs to the LLM provider, set `ASK_SH_NO_PANE=true`
         - If you don't set this variable when you query to `ask`, `ask` command will always recommend you to use tmux.
-    5. Set up your shell environment
+    6. Set up your shell environment
         - Add `eval "$(ask-sh --init)"` to your rc file (e.g., `~/.bashrc`, `~/.zshrc`)
         - Do not forget to source your shell config file or restart your shell.
     6. Test the command with `ask hey whats up`
@@ -248,9 +257,9 @@ This project is licensed under the terms of the MIT license.
 
 - Use at Your Own Risk: This software is provided "as is" without warranty of any kind, either expressed or implied. The use of this software is at your own discretion and risk, and you will be solely responsible for any damage or loss that results from its use.
 
-- Data Transmission to OpenAI: By using this software, the text you input, as well as certain terminal information, will be sent to OpenAI as part of the software's operation.
+- Data Transmission to LLM Providers: By using this software, the text you input, as well as certain terminal information, will be sent to the configured LLM provider (OpenAI or Anthropic) as part of the software's operation.
 
-- Potential for Unintended Data Transmission: Please be aware that due to the possibility of software bugs or unexpected behaviour, unintended data may be sent to OpenAI or whatsoever. While we strive to ensure the security and privacy of your data, these risks can never be completely eliminated.
+- Potential for Unintended Data Transmission: Please be aware that due to the possibility of software bugs or unexpected behaviour, unintended data may be sent to LLM providers or whatsoever. While we strive to ensure the security and privacy of your data, these risks can never be completely eliminated.
 
 
 # Q&A
@@ -281,19 +290,48 @@ Similar projects:
 
 #### Privacy concerns?
 
-- As of 5th July 2023, OpenAI [states](https://openai.com/policies/api-data-usage-policies) that they will not use data submitted by customers via their API to train or improve their models, unless you explicitly opt-in to do so.
-- And of course, you can use ask.sh without sending the current terminal output to the OpenAI server. Just set `ASK_SH_NO_PANE=true` in your shell.
+- Data usage policies:
+  - OpenAI [states](https://openai.com/policies/api-data-usage-policies) that they will not use data submitted via their API to train or improve their models, unless you explicitly opt-in to do so.
+  - Anthropic [states](https://console.anthropic.com/legal/terms) that they may use API data to improve their services, but you can request data deletion.
+- You can use ask.sh without sending terminal output to any LLM providers by setting `ASK_SH_NO_PANE=true` in your shell.
 
-#### Can I use GPT-4?
+#### Which LLM providers are supported?
 
-- Yes! You can use GPT-4 by setting the environmanet_variable `ASK_SH_OPENAI_MODEL=gpt-4`.
-  - This environment variable is just passed to OpenAI API. So you can use whatever model OpenAI serves.
-- Currently, default model is set to `gpt-3.5-turbo`.
+- OpenAI (default)
+  - Models: GPT-3.5, GPT-4, and any other models OpenAI serves
+  - Configure with `ASK_SH_OPENAI_MODEL` (default: gpt-4o)
+  - Example: `ASK_SH_OPENAI_MODEL=gpt-4`
+- Anthropic
+  - Models: Claude-3 and other Claude models
+  - Configure with `ASK_SH_ANTHROPIC_MODEL` (default: claude-3-5-opus-latest)
+  - Example: `ASK_SH_LLM_PROVIDER=anthropic ASK_SH_ANTHROPIC_MODEL=claude-3-opus-20240229`
+
+To switch providers, set `ASK_SH_LLM_PROVIDER` to either `openai` or `anthropic`. Don't forget to set the corresponding API key:
+- OpenAI: `ASK_SH_OPENAI_API_KEY`
+- Anthropic: `ASK_SH_ANTHROPIC_API_KEY`
 
 #### Why Rust?
 
 - It's just because shell tools should have less dependencies!
   - To my knowledge, there's no standard way in Python to make a command available to everywhere.
+
+#### Wanna change prompts?
+
+You can customize the prompts used by ask.sh by setting the following environment variables:
+
+- `ASK_SH_SYSTEM_PROMPT_WITH_PANE`: System prompt used when terminal context is available (in tmux)
+- `ASK_SH_USER_PROMPT_WITH_PANE`: User prompt format used when terminal context is available
+- `ASK_SH_SYSTEM_PROMPT_WITHOUT_PANE`: System prompt used when terminal context is not available
+- `ASK_SH_USER_PROMPT_WITHOUT_PANE`: User prompt format used when terminal context is not available
+
+The prompts support the following variables that will be replaced with actual values:
+- `{user_arch}`: CPU architecture
+- `{user_os}`: Operating system
+- `{user_shell}`: Current shell
+- `{pane_text}`: Terminal context (only in WITH_PANE prompts)
+- `{user_input}`: User's input/question
+
+See the default prompts in [src/prompt.rs](src/prompts.rs) for examples.
 
 # Contributing
 - Of course, we welcome contributions! Please feel free to open an issue or submit a pull request.
