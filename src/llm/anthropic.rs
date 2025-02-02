@@ -170,6 +170,7 @@ mod tests {
             provider: "anthropic".to_string(),
             model: "claude-3-opus-20240229".to_string(),
             api_key: "test-key".to_string(),
+            base_url: None,
         };
 
         let provider = AnthropicProvider::new(config).unwrap();

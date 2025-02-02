@@ -20,7 +20,13 @@ pub struct OpenAIProvider {
 
 impl OpenAIProvider {
     pub fn new(config: LLMConfig) -> Result<Self, LLMError> {
-        let openai_config = OpenAIConfig::new().with_api_key(config.api_key);
+        let mut openai_config = OpenAIConfig::new().with_api_key(config.api_key);
+
+        // Set custom base_url if specified
+        if let Some(base_url) = config.base_url {
+            openai_config = openai_config.with_api_base(&base_url);
+        }
+
         let client = Client::with_config(openai_config);
 
         Ok(Self {
@@ -69,7 +75,7 @@ impl LLMProvider for OpenAIProvider {
             .await
             .map_err(|e| LLMError::ApiError(e.to_string()))?;
 
-        // OpenAIのストリームをLLMErrorを使用するストリームに変換
+        // Convert OpenAI stream to a stream using LLMError
         let mapped_stream = stream.map(|result| match result {
             Ok(response) => {
                 let content = response
@@ -99,6 +105,7 @@ mod tests {
             provider: "openai".to_string(),
             model: "gpt-3.5-turbo".to_string(),
             api_key: "test-key".to_string(),
+            base_url: None,
         };
 
         let provider = OpenAIProvider::new(config).unwrap();

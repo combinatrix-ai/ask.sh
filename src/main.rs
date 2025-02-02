@@ -43,13 +43,14 @@ const ENV_NO_SUGGEST: &str = "ASK_SH_NO_SUGGEST";
 const ENV_LLM_PROVIDER: &str = "ASK_SH_LLM_PROVIDER";
 const ENV_OPENAI_API_KEY: &str = "ASK_SH_OPENAI_API_KEY";
 const ENV_OPENAI_MODEL: &str = "ASK_SH_OPENAI_MODEL";
+const ENV_OPENAI_BASE_URL: &str = "ASK_SH_OPENAI_BASE_URL";
 const ENV_ANTHROPIC_API_KEY: &str = "ASK_SH_ANTHROPIC_API_KEY";
 const ENV_ANTHROPIC_MODEL: &str = "ASK_SH_ANTHROPIC_MODEL";
 
 fn get_llm_config() -> Result<LLMConfig, LLMError> {
     dotenv().ok();
 
-    // プロバイダーの選択（デフォルトはOpenAI）
+    // Select provider (default is OpenAI)
     let provider = env::var(ENV_LLM_PROVIDER).unwrap_or_else(|_| "openai".to_string());
 
     match provider.as_str() {
@@ -59,10 +60,13 @@ fn get_llm_config() -> Result<LLMConfig, LLMError> {
 
             let model = env::var(ENV_OPENAI_MODEL).unwrap_or_else(|_| "gpt-3.5-turbo".to_string());
 
+            let base_url = env::var(ENV_OPENAI_BASE_URL).ok();
+
             Ok(LLMConfig {
                 provider,
                 api_key,
                 model,
+                base_url,
             })
         }
         "anthropic" => {
@@ -76,6 +80,7 @@ fn get_llm_config() -> Result<LLMConfig, LLMError> {
                 provider,
                 api_key,
                 model,
+                base_url: None, // Anthropic does not support custom endpoints
             })
         }
         _ => Err(LLMError::ConfigError(format!(
@@ -100,7 +105,7 @@ struct UserInfo {
     // TODO: add distro info if linux
 }
 
-/// LLMプロバイダーとのチャット
+/// Chat with LLM provider
 #[tokio::main]
 async fn chat(
     user_input: String,

@@ -225,9 +225,13 @@ Optional, but highly recommended if you want `ask` command to work more nicely:
     1. Install [prerequisites](#prerequisites)
     2. Install `ask.sh` using cargo: `cargo install ask-sh`
     3. Choose and configure your LLM provider:
-       - For OpenAI (default):
+       - For OpenAI and its compatible APIs (default):
          - Set `ASK_SH_OPENAI_API_KEY` in your shell
          - You can get your API key from [OpenAI](https://platform.openai.com/account/api-keys)
+         - Optional: Set `ASK_SH_OPENAI_BASE_URL` for custom OpenAI-compatible endpoints
+           - For Ollama: `ASK_SH_OPENAI_BASE_URL="http://localhost:11434/v1"`
+           - For Deepseek: `ASK_SH_OPENAI_BASE_URL="https://api.deepseek.com"`
+           - See [here](#which-llm-providers-are-supported) for details.
        - For Anthropic:
          - Set `ASK_SH_ANTHROPIC_API_KEY` in your shell
          - You can get your API key from [Anthropic](https://console.anthropic.com/account/keys)
@@ -297,10 +301,13 @@ Similar projects:
 
 #### Which LLM providers are supported?
 
-- OpenAI (default)
+- OpenAI and its compatible APIs (default)
   - Models: GPT-3.5, GPT-4, and any other models OpenAI serves
   - Configure with `ASK_SH_OPENAI_MODEL` (default: gpt-4o)
-  - Example: `ASK_SH_OPENAI_MODEL=gpt-4`
+    - Example: `ASK_SH_OPENAI_MODEL=gpt-4`
+  - Custom Endpoints: You can use OpenAI-compatible APIs by setting `ASK_SH_OPENAI_BASE_URL`
+    - Ollama Example: `ASK_SH_OPENAI_BASE_URL="http://localhost:11434/v1" ASK_SH_OPENAI_MODEL="deepseek-r1:8b" ask who are you`
+    - DeepSeek Example: `ASK_SH_OPENAI_BASE_URL="https://api.deepseek.com" ASK_SH_OPENAI_MODEL="deepseek-chat" ASK_SH_OPENAI_API_KEY=xxx ask who are you`
 - Anthropic
   - Models: Claude-3 and other Claude models
   - Configure with `ASK_SH_ANTHROPIC_MODEL` (default: claude-3-5-opus-latest)

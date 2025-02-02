@@ -3,7 +3,7 @@ use futures::Stream;
 use std::{fmt::Debug, pin::Pin};
 use thiserror::Error;
 
-/// LLMプロバイダーからのエラー
+/// Error from LLM provider
 #[derive(Debug, Error)]
 pub enum LLMError {
     #[error("API error: {0}")]
@@ -19,27 +19,39 @@ pub enum LLMError {
     InvalidRequestError(String),
 }
 
-/// LLMの設定
+/// LLM configuration
 #[derive(Debug, Clone)]
 pub struct LLMConfig {
     pub provider: String,
     pub model: String,
     pub api_key: String,
+    pub base_url: Option<String>, // Custom endpoint URL (for OpenAI)
 }
 
-/// チャットストリームの型エイリアス
+impl Default for LLMConfig {
+    fn default() -> Self {
+        Self {
+            provider: String::new(),
+            model: String::new(),
+            api_key: String::new(),
+            base_url: None,
+        }
+    }
+}
+
+/// Type alias for chat stream
 pub type ChatStream = Pin<Box<dyn Stream<Item = Result<String, LLMError>> + Send + 'static>>;
 
-/// LLMプロバイダーのトレイト
+/// Trait for LLM provider
 #[async_trait]
 pub trait LLMProvider: Send + Sync + Debug {
-    /// プロバイダーの名前を返す
+    /// Returns the provider name
     fn name(&self) -> &'static str;
 
-    /// 現在使用中のモデル名を返す
+    /// Returns the current model name
     fn model(&self) -> &str;
 
-    /// チャット完了をストリーミングで取得
+    /// Get chat completion as a stream
     async fn chat_stream(
         &self,
         system_message: String,
@@ -50,7 +62,7 @@ pub trait LLMProvider: Send + Sync + Debug {
 pub mod anthropic;
 pub mod openai;
 
-/// 利用可能なLLMプロバイダー
+/// Available LLM providers
 #[derive(Debug)]
 pub enum Provider {
     OpenAI(openai::OpenAIProvider),
@@ -85,7 +97,7 @@ impl LLMProvider for Provider {
     }
 }
 
-/// プロバイダーファクトリー
+/// Provider factory
 pub fn create_provider(config: LLMConfig) -> Result<Provider, LLMError> {
     match config.provider.as_str() {
         "openai" => Ok(Provider::OpenAI(openai::OpenAIProvider::new(config)?)),
