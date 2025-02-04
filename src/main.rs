@@ -193,7 +193,7 @@ ask() {{
     fi
     suggested_commands=`echo "$@" | ask-sh 2> >(cat 1>&2)`
     if [ -n "$suggested_commands" ]; then
-        printf "\n"
+        printf "\n" # add one empty line to create space
         printf "👋 Hey, AI has suggested some commands that can be typed into your terminal.\n"
         printf "🔍 Press Enter to view and select the commands, or type any other key to exit:"
         if [ -n "$ZSH_VERSION" ]; then # read a single char
@@ -202,16 +202,24 @@ ask() {{
             read -r -n 1 REPLY # bash
         fi
         REPLY="${{REPLY#"${{REPLY%%[![:space:]]*}}"}}"  # trim whitespaces
-        printf "\033[3A" # go back three lines
-        printf "\033[2K\n\033[2K\n\033[2K\n\033[2K\n" # delete uninformative lines
-        printf "\033[4A" # go back again
         if [ -z "$REPLY" ] ; then
+            # As Enter will move cursor to the next line, we need to go back two lines
+            printf "\033[2A"
+            # \033[2K: delete current line (👋 line), \n: go next line, \033[2K: delete next line (🔍 line)
+            printf "\033[2K\n\033[2K\n"
+            # We're at the emptified 🔍 line. So, go back two lines, including empty line to make space
+            printf "\033[2A" # go back again
             selected_command=`echo "$suggested_commands" | peco  --prompt "AI suggested commands (Enter to use / Ctrl+C to exit):"`
             if [ -n "$selected_command" ]; then
                 if ! print -z $selected_command 2>/dev/null; then
                     history -s $selected_command
                 fi
             fi
+        else
+            # We're at the end of 🔍 line. So, go back one line (👋 line)
+            printf "\033[1A"
+            printf "\033[2K\n\033[2K\n"
+            printf "\033[2A"
         fi
     fi
     if [ -z "$ASK_SH_NO_UPDATE" ]; then
