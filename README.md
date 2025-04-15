@@ -1,6 +1,6 @@
 # ask.sh: AI terminal assistant that read from & write to your terminal
 
-- `ask.sh` is an AI terminal assistant that supports multiple LLM providers (OpenAI and Anthropic)!
+- `ask.sh` is an AI terminal assistant that supports multiple LLM providers (OpenAI, Anthropic and NanoGPT)!
 - What's unique?
     - `ask.sh` can *read from and write to your terminal*!
         - No need to copy and paste error texts to a browser window and then bring solutions back to the terminal!
@@ -236,9 +236,14 @@ Optional, but highly recommended if you want `ask` command to work more nicely:
          - Set `ASK_SH_ANTHROPIC_API_KEY` in your shell
          - You can get your API key from [Anthropic](https://console.anthropic.com/account/keys)
          - Set `ASK_SH_LLM_PROVIDER=anthropic`
+       - For NanoGPT:
+         - Set `ASK_SH_NANOGPT_API_KEY` in your shell
+         - You can get your API key from [NanoGPT](https://nano-gpt.com/api)
+         - Set `ASK_SH_LLM_PROVIDER=nanogpt`
     4. Optional: Configure model settings
-       - OpenAI: Set `ASK_SH_OPENAI_MODEL` (default: gpt-4o)
-       - Anthropic: Set `ASK_SH_ANTHROPIC_MODEL` (default: claude-3-opus-20240229)
+       - OpenAI: Set `ASK_SH_OPENAI_MODEL` (default: gpt-3.5-turbo)
+       - Anthropic: Set `ASK_SH_ANTHROPIC_MODEL` (default: claude-3-5-sonnet-latest)
+       - NanoGPT: Set `ASK_SH_NANOGPT_MODEL` (default: gpt-4o)
     5. If you don't want to use tmux or send your terminal outputs to the LLM provider, set `ASK_SH_NO_PANE=true`
         - If you don't set this variable when you query to `ask`, `ask` command will always recommend you to use tmux.
     6. Set up your shell environment
@@ -261,7 +266,7 @@ This project is licensed under the terms of the MIT license.
 
 - Use at Your Own Risk: This software is provided "as is" without warranty of any kind, either expressed or implied. The use of this software is at your own discretion and risk, and you will be solely responsible for any damage or loss that results from its use.
 
-- Data Transmission to LLM Providers: By using this software, the text you input, as well as certain terminal information, will be sent to the configured LLM provider (OpenAI or Anthropic) as part of the software's operation.
+- Data Transmission to LLM Providers: By using this software, the text you input, as well as certain terminal information, will be sent to the configured LLM provider (OpenAI, Anthropic or NanoGPT) as part of the software's operation.
 
 - Potential for Unintended Data Transmission: Please be aware that due to the possibility of software bugs or unexpected behaviour, unintended data may be sent to LLM providers or whatsoever. While we strive to ensure the security and privacy of your data, these risks can never be completely eliminated.
 
@@ -297,25 +302,30 @@ Similar projects:
 - Data usage policies:
   - OpenAI [states](https://openai.com/policies/api-data-usage-policies) that they will not use data submitted via their API to train or improve their models, unless you explicitly opt-in to do so.
   - Anthropic [states](https://console.anthropic.com/legal/terms) that they may use API data to improve their services, but you can request data deletion.
-- You can use ask.sh without sending terminal output to any LLM providers by setting `ASK_SH_NO_PANE=true` in your shell.
-
+  - NanoGPT [states](https://nano-gpt.com/legal/terms-of-service) that, by default, any data generated during use is stored locally on your device. If you opt to create an account, you may choose to store conversations and images on NanoGPT’s servers. This is an opt-in feature, and you control what is stored. You may delete your data or account at any time, and NanoGPT will not retain any deleted content.
 #### Which LLM providers are supported?
 
 - OpenAI and its compatible APIs (default)
   - Models: GPT-3.5, GPT-4, and any other models OpenAI serves
-  - Configure with `ASK_SH_OPENAI_MODEL` (default: gpt-4o)
+  - Configure with `ASK_SH_OPENAI_MODEL` (default: gpt-3.5-turbo)
     - Example: `ASK_SH_OPENAI_MODEL=gpt-4`
   - Custom Endpoints: You can use OpenAI-compatible APIs by setting `ASK_SH_OPENAI_BASE_URL`
     - Ollama Example: `ASK_SH_OPENAI_BASE_URL="http://localhost:11434/v1" ASK_SH_OPENAI_MODEL="deepseek-r1:8b" ask who are you`
     - DeepSeek Example: `ASK_SH_OPENAI_BASE_URL="https://api.deepseek.com" ASK_SH_OPENAI_MODEL="deepseek-chat" ASK_SH_OPENAI_API_KEY=xxx ask who are you`
 - Anthropic
   - Models: Claude-3 and other Claude models
-  - Configure with `ASK_SH_ANTHROPIC_MODEL` (default: claude-3-5-opus-latest)
-  - Example: `ASK_SH_LLM_PROVIDER=anthropic ASK_SH_ANTHROPIC_MODEL=claude-3-opus-20240229`
+  - Configure with `ASK_SH_ANTHROPIC_MODEL` (default: claude-3-5-sonnet-latest)
+  - Example: `ASK_SH_LLM_PROVIDER=anthropic ASK_SH_ANTHROPIC_MODEL=claude-3-5-sonnet-latest`
+- NanoGPT
+  - Models: List of models available at [NanoGPT](https://nano-gpt.com/pricing)
+  - Configure with `ASK_SH_NANOGPT_MODEL` (default: gpt-4o)
+  - Internet: add `:online` to the model name to use the online functionality (e.g., `gpt-4o:online`)
+  - Example: `ASK_SH_LLM_PROVIDER=nanogpt ASK_SH_NANOGPT_MODEL=gpt-3.5-turbo`
 
-To switch providers, set `ASK_SH_LLM_PROVIDER` to either `openai` or `anthropic`. Don't forget to set the corresponding API key:
+To switch providers, set `ASK_SH_LLM_PROVIDER` to either `openai`, `anthropic` or `nanogpt`. Don't forget to set the corresponding API key:
 - OpenAI: `ASK_SH_OPENAI_API_KEY`
 - Anthropic: `ASK_SH_ANTHROPIC_API_KEY`
+- NanoGPT: `ASK_SH_NANOGPT_API_KEY`
 
 #### Why Rust?
 

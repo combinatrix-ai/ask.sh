@@ -46,6 +46,8 @@ const ENV_OPENAI_MODEL: &str = "ASK_SH_OPENAI_MODEL";
 const ENV_OPENAI_BASE_URL: &str = "ASK_SH_OPENAI_BASE_URL";
 const ENV_ANTHROPIC_API_KEY: &str = "ASK_SH_ANTHROPIC_API_KEY";
 const ENV_ANTHROPIC_MODEL: &str = "ASK_SH_ANTHROPIC_MODEL";
+const ENV_NANOGPT_API_KEY: &str = "ASK_SH_NANOGPT_API_KEY";
+const ENV_NANOGPT_MODEL: &str = "ASK_SH_NANOGPT_MODEL";
 
 fn get_llm_config() -> Result<LLMConfig, LLMError> {
     dotenv().ok();
@@ -81,6 +83,20 @@ fn get_llm_config() -> Result<LLMConfig, LLMError> {
                 api_key,
                 model,
                 base_url: None, // Anthropic does not support custom endpoints
+            })
+        }
+        "nanogpt" => {
+            let api_key = env::var(ENV_NANOGPT_API_KEY)
+                .map_err(|_| LLMError::ConfigError("NanoGPT API key not found".to_string()))?;
+
+            // Qwen turbo is a cheap and fast model. Does the job for most cases.
+            let model = env::var(ENV_NANOGPT_MODEL).unwrap_or_else(|_| "gpt-4o".to_string());
+
+            Ok(LLMConfig {
+                provider,
+                api_key,
+                model,
+                base_url: None, // NanoGPT does not support custom endpoints
             })
         }
         _ => Err(LLMError::ConfigError(format!(

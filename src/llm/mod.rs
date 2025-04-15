@@ -61,12 +61,14 @@ pub trait LLMProvider: Send + Sync + Debug {
 
 pub mod anthropic;
 pub mod openai;
+pub mod nanogpt;
 
 /// Available LLM providers
 #[derive(Debug)]
 pub enum Provider {
     OpenAI(openai::OpenAIProvider),
     Anthropic(anthropic::AnthropicProvider),
+    NanoGPT(nanogpt::NanoGPTProvider),
 }
 
 #[async_trait]
@@ -75,6 +77,7 @@ impl LLMProvider for Provider {
         match self {
             Provider::OpenAI(p) => p.name(),
             Provider::Anthropic(p) => p.name(),
+            Provider::NanoGPT(p) => p.name(),
         }
     }
 
@@ -82,6 +85,7 @@ impl LLMProvider for Provider {
         match self {
             Provider::OpenAI(p) => p.model(),
             Provider::Anthropic(p) => p.model(),
+            Provider::NanoGPT(p) => p.model(),
         }
     }
 
@@ -93,6 +97,7 @@ impl LLMProvider for Provider {
         match self {
             Provider::OpenAI(p) => p.chat_stream(system_message, user_message).await,
             Provider::Anthropic(p) => p.chat_stream(system_message, user_message).await,
+            Provider::NanoGPT(p) => p.chat_stream(system_message, user_message).await,
         }
     }
 }
@@ -104,6 +109,7 @@ pub fn create_provider(config: LLMConfig) -> Result<Provider, LLMError> {
         "anthropic" => Ok(Provider::Anthropic(anthropic::AnthropicProvider::new(
             config,
         )?)),
+        "nanogpt" => Ok(Provider::NanoGPT(nanogpt::NanoGPTProvider::new(config)?)),
         _ => Err(LLMError::ConfigError(format!(
             "Unknown provider: {}",
             config.provider
