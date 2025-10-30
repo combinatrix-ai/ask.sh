@@ -11,21 +11,38 @@ fi
 
 echo "** 🎁 Installing ask.sh to your shell. **"
 
-# check current shell using variables.
-if [ -n "$BASH_VERSION" ]; then
-    echo "You're installing ask.sh in Bash."
-    DEFAULT_SHELL="bash"
-elif [ -n "$ZSH_VERSION" ]; then
-    echo "You're installing ask.sh in zsh."
-    DEFAULT_SHELL="zsh"
+# Detect user's actual shell (not the script interpreter)
+# Check $SHELL first, then fall back to checking parent process
+USER_SHELL=""
+if [ -n "$SHELL" ]; then
+    USER_SHELL=$(basename "$SHELL")
 else
-    echo "😭 Could not automatically determine your shell."
-    echo "If you're using zsh or bash, please run the following command to install ask.sh:"
-    echo "zsh -c \"\$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
-    echo "bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
-    echo "If you are using a shell other than zsh or bash, this installer does not support it. However, ask.sh may work with manual install. Follow the instructions on https://github.com/hmirin/ask.sh#installation"
-    exit 1
+    # Try to detect from parent process
+    PARENT_PID=$(ps -p $$ -o ppid= | tr -d ' ')
+    if [ -n "$PARENT_PID" ]; then
+        USER_SHELL=$(ps -p "$PARENT_PID" -o comm= | tr -d ' ')
+    fi
 fi
+
+# Determine default shell based on detection
+case "$USER_SHELL" in
+    *zsh*)
+        echo "You're installing ask.sh for zsh."
+        DEFAULT_SHELL="zsh"
+        ;;
+    *bash*)
+        echo "You're installing ask.sh for Bash."
+        DEFAULT_SHELL="bash"
+        ;;
+    *)
+        echo "😭 Could not automatically determine your shell (detected: $USER_SHELL)."
+        echo "If you're using zsh or bash, please run the following command to install ask.sh:"
+        echo "zsh -c \"\$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
+        echo "bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/hmirin/ask.sh/main/install.sh)\""
+        echo "If you are using a shell other than zsh or bash, this installer does not support it. However, ask.sh may work with manual install. Follow the instructions on https://github.com/hmirin/ask.sh#installation"
+        exit 1
+        ;;
+esac
 
 # Check the default shell and select appropriate rc file
 if [ "$DEFAULT_SHELL" = "zsh" ]; then
