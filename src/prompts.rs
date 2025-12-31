@@ -52,6 +52,7 @@ Note that the user is operating on a {user_arch} machine, using {user_shell} on 
 const USER_PROMPT_WITH_PANE: &str = r#"
 Terminal state:
 {pane_text}
+
 User's request:
 {user_input}
 "#;

@@ -38,6 +38,7 @@ const ARG_INIT: &str = "--init";
 const ENV_DEBUG: &str = "ASK_SH_DEBUG";
 const ENV_NO_PANE: &str = "ASK_SH_NO_PANE";
 const ENV_NO_SUGGEST: &str = "ASK_SH_NO_SUGGEST";
+const ENV_CONTEXT_LINES: &str = "ASK_SH_CONTEXT_LINES";
 
 // LLM provider settings
 const ENV_LLM_PROVIDER: &str = "ASK_SH_LLM_PROVIDER";
@@ -315,9 +316,18 @@ fn main() {
                 }
             }
             if in_tmux {
+                // Get context lines from env var, default to 300
+                let context_lines = env::var(ENV_CONTEXT_LINES)
+                    .ok()
+                    .and_then(|s| s.parse::<i32>().ok())
+                    .unwrap_or(300);
+
                 match std::process::Command::new("tmux")
                     .arg("capture-pane")
-                    .arg("-p")
+                    .arg("-e")  // Remove ANSI escape sequences
+                    .arg("-p")  // Print to stdout
+                    .arg("-S")  // Start line (negative = scrollback)
+                    .arg(format!("-{}", context_lines))
                     .output()
                 {
                     Ok(output) => pane_text = String::from_utf8_lossy(&output.stdout).to_string(),
