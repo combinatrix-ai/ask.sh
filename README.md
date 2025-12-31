@@ -241,10 +241,13 @@ Optional, but highly recommended if you want `ask` command to work more nicely:
        - Anthropic: Set `ASK_SH_ANTHROPIC_MODEL` (default: claude-3-opus-20240229)
     5. If you don't want to use tmux or send your terminal outputs to the LLM provider, set `ASK_SH_NO_PANE=true`
         - If you don't set this variable when you query to `ask`, `ask` command will always recommend you to use tmux.
-    6. Set up your shell environment
+   6. Optional: Configure terminal context capture
+        - By default, ask.sh captures the last 300 lines of your terminal (including scrollback history)
+        - Customize the number of lines with `ASK_SH_CONTEXT_LINES` (e.g., `export ASK_SH_CONTEXT_LINES=500`)
+    7. Set up your shell environment
         - Add `eval "$(ask-sh --init)"` to your rc file (e.g., `~/.bashrc`, `~/.zshrc`)
         - Do not forget to source your shell config file or restart your shell.
-    6. Test the command with `ask hey whats up`
+    8. Test the command with `ask hey whats up`
         - If AI responds with phrases like "As an AI assistant, I can't experience emotions blah blah blah", it means that the setup is done correctly.
 
 # Extras!
@@ -288,8 +291,10 @@ Similar projects:
 
 #### How ask.sh send the current output of terminal?
 
-- ask.sh use `tmux capture-pane -p` to get the current terminal status. Therefore, if you run `ask` in tmux pane, text on the pane will be sent to the OpenAI.
-- This will give AI the context of your request and improve the result.
+- ask.sh uses `tmux capture-pane` to get the terminal history and status. Therefore, if you run `ask` in a tmux pane, terminal text will be sent to your configured LLM provider.
+- By default, the last 300 lines (including scrollback history) are captured with ANSI escape sequences removed for cleaner context.
+- You can customize the number of lines captured by setting `ASK_SH_CONTEXT_LINES` (e.g., `export ASK_SH_CONTEXT_LINES=500`).
+- This gives AI the context of your request and improves the result quality.
 - If you don't want to use this feature, set `ASK_SH_NO_PANE=true` in your shell.
 
 #### Privacy concerns?
@@ -339,6 +344,35 @@ The prompts support the following variables that will be replaced with actual va
 - `{user_input}`: User's input/question
 
 See the default prompts in [src/prompt.rs](src/prompts.rs) for examples.
+
+#### Environment Variables Reference
+
+Here's a complete list of environment variables you can use to customize ask.sh:
+
+**LLM Provider Configuration:**
+- `ASK_SH_LLM_PROVIDER`: Choose provider (`openai` or `anthropic`, default: `openai`)
+- `ASK_SH_OPENAI_API_KEY`: OpenAI API key
+- `ASK_SH_OPENAI_MODEL`: OpenAI model name (default: `gpt-4o`)
+- `ASK_SH_OPENAI_BASE_URL`: Custom OpenAI-compatible endpoint URL
+- `ASK_SH_ANTHROPIC_API_KEY`: Anthropic API key
+- `ASK_SH_ANTHROPIC_MODEL`: Anthropic model name (default: `claude-3-5-sonnet-latest`)
+
+**Terminal Context Configuration:**
+- `ASK_SH_NO_PANE`: Disable terminal context capture (`true`/`false`, default: `false`)
+- `ASK_SH_CONTEXT_LINES`: Number of terminal lines to capture (default: `300`)
+
+**Output Configuration:**
+- `ASK_SH_NO_SUGGEST`: Disable command suggestions (`true`/`false`, default: `false`)
+
+**Prompt Customization:**
+- `ASK_SH_SYSTEM_PROMPT_WITH_PANE`: Custom system prompt when terminal context is available
+- `ASK_SH_USER_PROMPT_WITH_PANE`: Custom user prompt format when terminal context is available
+- `ASK_SH_SYSTEM_PROMPT_WITHOUT_PANE`: Custom system prompt without terminal context
+- `ASK_SH_USER_PROMPT_WITHOUT_PANE`: Custom user prompt format without terminal context
+
+**Development:**
+- `ASK_SH_DEBUG`: Enable debug mode (`true`/`false`, default: `false`)
+- `ASK_SH_NO_UPDATE`: Disable update check (`true`/`false`, default: `false`)
 
 # Contributing
 - Of course, we welcome contributions! Please feel free to open an issue or submit a pull request.
